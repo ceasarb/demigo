@@ -1,0 +1,17 @@
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Editor / IDE
+.idea/
+.vscode/
+*.iml
+
+# Local install artifacts (Cursor / Codex / etc. populated locally)
+.cursor/
+.codex/
+
+# Backups left by sed -i ''
+*.bak
+README.md.old

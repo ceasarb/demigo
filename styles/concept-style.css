@@ -1,0 +1,224 @@
+/* Concept library — minimal, readable, study-focused.
+   Used by all rendered concept HTML files. */
+
+:root {
+  color-scheme: light dark;
+
+  --bg: #fafaf7;
+  --fg: #1a1a1a;
+  --fg-muted: #555;
+  --border: #e2e2dd;
+  --accent: #3a5a7c;
+  --code-bg: #f0efe9;
+  --card-bg: #ffffff;
+
+  --confidence-shaky: #c1554b;
+  --confidence-solid: #c98e2b;
+  --confidence-teach-it: #2e8857;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1c1f;
+    --fg: #e8e6e0;
+    --fg-muted: #9c9890;
+    --border: #2d3036;
+    --accent: #88aed4;
+    --code-bg: #25282d;
+    --card-bg: #22252a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 3rem 1.5rem 6rem;
+  font-family: Charter, "Iowan Old Style", "Source Serif Pro", Georgia, serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+main {
+  max-width: 70ch;
+  margin: 0 auto;
+}
+
+h1, h2, h3, h4 {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  line-height: 1.25;
+  margin-top: 2.5em;
+  margin-bottom: 0.6em;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-top: 0.5em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4em;
+}
+
+h2 { font-size: 1.4rem; }
+h3 { font-size: 1.15rem; color: var(--fg-muted); }
+
+p {
+  margin: 0.9em 0;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+a:hover { border-bottom-color: var(--accent); }
+
+code {
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.88em;
+  background: var(--code-bg);
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 1rem 1.2rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  margin-left: 0;
+  color: var(--fg-muted);
+  font-style: italic;
+}
+
+ul, ol {
+  padding-left: 1.4rem;
+}
+
+li {
+  margin: 0.3em 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5em 0;
+}
+
+/* Confidence badge — fixed top-right */
+.confidence {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.7rem;
+  border-radius: 99px;
+  color: white;
+  z-index: 10;
+}
+.confidence.shaky    { background: var(--confidence-shaky); }
+.confidence.solid    { background: var(--confidence-solid); }
+.confidence.teach-it { background: var(--confidence-teach-it); }
+
+/* Metadata block under title */
+.meta {
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  margin: -0.5em 0 2em;
+}
+.meta span + span { margin-left: 1rem; }
+
+/* Flashcard sections — <details> styled as flippable cards */
+details.flashcard {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin: 1em 0;
+  cursor: pointer;
+}
+details.flashcard summary {
+  font-weight: 600;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  list-style: none;
+  outline: none;
+}
+details.flashcard summary::-webkit-details-marker { display: none; }
+details.flashcard summary::before {
+  content: "→ ";
+  color: var(--accent);
+}
+details.flashcard[open] summary::before {
+  content: "↓ ";
+}
+details.flashcard[open] {
+  padding-bottom: 1.2rem;
+}
+details.flashcard .answer {
+  margin-top: 0.8em;
+  padding-top: 0.8em;
+  border-top: 1px solid var(--border);
+}
+
+/* Study-guide rollup — TOC sidebar on wide screens */
+nav.toc {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9rem;
+}
+nav.toc ul {
+  list-style: none;
+  padding-left: 0;
+}
+nav.toc li {
+  margin: 0.4em 0;
+}
+nav.toc a {
+  color: var(--fg-muted);
+}
+nav.toc a:hover {
+  color: var(--accent);
+}
+
+@media (min-width: 1100px) {
+  body.study-guide {
+    padding-left: 18rem;
+  }
+  body.study-guide nav.toc {
+    position: fixed;
+    top: 3rem;
+    left: 2rem;
+    width: 14rem;
+    max-height: calc(100vh - 5rem);
+    overflow-y: auto;
+  }
+}
+
+/* Print: hide nav and badge */
+@media print {
+  .confidence, nav.toc { display: none; }
+  body { padding: 1cm; max-width: none; }
+}
