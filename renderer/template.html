@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$pagetitle$</title>
+  <link rel="stylesheet" href="$cssbase$style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>$sectionlabel$</h2>
+      <ul>
+        $navlinks$
+      </ul>
+      $if(toc)$
+      <h2>On this page</h2>
+      <nav class="toc">
+        $toc$
+      </nav>
+      $endif$
+      <h2>Library</h2>
+      <ul>
+        $sectionsnav$
+      </ul>
+    </aside>
+    <main>
+      <div class="crumbs">$crumbs$</div>
+      <article>
+$body$
+      </article>
+      <footer class="site">$footer$</footer>
+    </main>
+  </div>
+</body>
+</html>

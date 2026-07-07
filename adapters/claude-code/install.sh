@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Install Tandem prompts as Claude Code slash commands under /tandem:*
 #
-# The 14 markdown prompts in tandem/prompts/ become callable as
+# The markdown prompts in tandem/prompts/ become callable as
 # /tandem:scaffold, /tandem:brainstorm, /tandem:study, etc. inside Claude Code.
+#
+# It also stages the shared curriculum renderer (renderer/) at
+# ~/.claude/commands/tandem/_assets/ so /tandem:learn and /tandem:teach can seed
+# it into your concept library and render study layers to HTML by default.
 #
 # Usage:
 #   ./install.sh                # default: symlink mode (recommended)
@@ -19,6 +23,8 @@ CLAUDE_DIR="${HOME}/.claude"
 NAMESPACE="tandem"
 TARGET_DIR="${CLAUDE_DIR}/commands/${NAMESPACE}"
 SRC_DIR="${REPO_ROOT}/prompts"
+RENDERER_SRC="${REPO_ROOT}/renderer"
+RENDERER_DST="${TARGET_DIR}/_assets"
 MODE="${1:-symlink}"
 
 # Handle uninstall
@@ -85,6 +91,25 @@ for cmd in "${SRC_CMDS[@]}"; do
   INSTALLED=$((INSTALLED + 1))
 done
 
+# Stage the shared curriculum renderer so /tandem:learn and /tandem:teach can
+# seed <library>/study/_assets/ from a stable, clone-location-independent path.
+if [[ -d "${RENDERER_SRC}" ]]; then
+  echo
+  echo "🎨 Staging curriculum renderer → ${RENDERER_DST}"
+  # Refresh in place: the renderer is generated output, safe to overwrite.
+  rm -rf "${RENDERER_DST}"
+  if [[ "${MODE}" == "--copy" ]] || [[ "${MODE}" == "copy" ]]; then
+    cp -R "${RENDERER_SRC}" "${RENDERER_DST}"
+    echo "   ✓ Copied  renderer/ (build.mjs, template.html, style.css)"
+  else
+    ln -s "${RENDERER_SRC}" "${RENDERER_DST}"
+    echo "   ✓ Linked  renderer/ (build.mjs, template.html, style.css)"
+  fi
+else
+  echo
+  echo "⚠️  No renderer/ dir at ${RENDERER_SRC} — HTML rendering of study layers will be unavailable."
+fi
+
 echo
 echo "✅ Done. Installed ${INSTALLED}, skipped ${SKIPPED}."
 echo
@@ -102,5 +127,8 @@ echo "   4. Run /${NAMESPACE}:brainstorm to start capturing decisions"
 echo
 echo "Concept library: ~/Developer/concepts/ by default."
 echo "Override with: export TANDEM_CONCEPTS_DIR=/your/preferred/path"
+echo
+echo "Study layers render to HTML by default via the staged renderer."
+echo "That requires 'pandoc' and 'node' on PATH:  brew install pandoc node"
 echo
 echo "To uninstall later: ${SCRIPT_DIR}/install.sh --uninstall"

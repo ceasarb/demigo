@@ -17,7 +17,11 @@ tandem/
 │   ├── claude-code/            # install as Claude Code slash commands (/tandem:*)
 │   └── cursor/                 # (planned) install as Cursor rules
 ├── styles/
-│   └── concept-style.css       # shared style for rendered concept HTML
+│   └── concept-style.css       # shared style for rendered concept-atom HTML (/tandem:study)
+├── renderer/                   # shared curriculum renderer (/tandem:teach) — seeded into the library
+│   ├── build.mjs               #   topic-agnostic MD→HTML builder (needs pandoc + node)
+│   ├── template.html           #   page shell (sidebar nav + on-this-page TOC)
+│   └── style.css               #   curriculum stylesheet
 ├── docs/
 │   └── methodology.md          # long-form on the philosophy
 ├── install.sh                  # convenience wrapper → adapters/claude-code/install.sh
@@ -59,7 +63,7 @@ Contributions welcome. The `prompts/` markdown is the source of truth; adapters 
 
 For client work with existing material: replace step 2 with `/tandem:discovery <notes-file>`.
 
-For learning / upskilling: use `/tandem:learn <topic>` and `/tandem:study <concept>` (writes to the central concept library — see below).
+For learning / upskilling: `/tandem:learn <topic>` (plan) → `/tandem:teach <topic>` (acquire, layer by layer, rendered to HTML) → `/tandem:study <concept>` (consolidate). All three write to the central concept library — see below.
 
 ## Commands
 
@@ -78,8 +82,9 @@ All top-of-funnel commands drive a conversation, draft PDRs/ADRs inline, and ask
 | `/tandem:brainstorm` | Self-directed work. You arrive with an idea. Model drives product Q&A then tech Q&A. |
 | `/tandem:discovery` | Client work. You arrive with material. Raw preserved verbatim; conflicts/ambiguities/unstated gaps surfaced. |
 | `/tandem:design` | Visual refinement phase. Reference-first interview (admired apps, anti-references), then structural design decisions. |
-| `/tandem:learn <topic>` | Learning a new topic. Plan-mode Q&A committing PDRs/ADRs, then hands off to study mode. |
-| `/tandem:study <concept>` | Feynman-test capture. Probes weak spots, captures consolidated explanation. Writes MD + auto-rendered HTML. |
+| `/tandem:learn <topic>` | **Plan** a topic. Plan-mode Q&A committing PDRs/ADRs to the library, optionally scaffolds a curriculum, then hands off to `/tandem:teach`. |
+| `/tandem:teach <topic>` | **Acquire** a topic. Authors a layered, anchor-first curriculum in the library's `study/` tree — one prose layer per invoke — and renders it to HTML by default. |
+| `/tandem:study <concept>` | **Consolidate** one idea. Feynman-test capture; probes weak spots. Writes MD + auto-rendered HTML atom, citing its curriculum layer. |
 | `/tandem:decide-product` | Focused PDR interview. Direct invocation or called inline. |
 | `/tandem:decide-tech` | Focused ADR interview. Direct invocation or called inline. |
 | `/tandem:refine <ID>` | Iterate on an existing decision. In-place if unshipped; supersede if shipped. |
@@ -136,14 +141,27 @@ The library layout:
 
 ```
 ~/Developer/concepts/
-├── style.css                       # shared style for all rendered HTML
-├── <topic>/
-│   ├── <concept-slug>.md           # source of truth
+├── style.css                       # shared style for rendered concept-atom HTML
+├── study/                          # curricula (/tandem:teach) — layered teaching content
+│   ├── _assets/                    #   shared renderer, seeded from Tandem's renderer/
+│   │   ├── build.mjs               #   run: node study/_assets/build.mjs <topic>
+│   │   ├── template.html
+│   │   └── style.css
+│   └── <topic>[/<lens>]/           #   e.g. study/networking/gcp/
+│       ├── 00_<topic>-session.md   #   anchor
+│       ├── 00_<topic>-session.html #   rendered next to the .md, by default
+│       ├── NN-<slug>.md            #   layer
+│       ├── NN-<slug>.html          #   rendered next to the .md
+│       └── README.md               #   Written / Planned curriculum state
+├── <topic>/                        # atoms (/tandem:study) — single Feynman-tested ideas
+│   ├── <concept-slug>.md           #   source of truth
 │   └── _html/
-│       └── <concept-slug>.html     # auto-rendered on /tandem:study commit
+│       └── <concept-slug>.html     #   auto-rendered on /tandem:study commit
 └── _html/
     └── study-guide-<topic>.html    # aggregated topic guides
 ```
+
+Curriculum layers render to HTML **by default** — `/tandem:teach` runs the shared renderer after authoring or updating a layer (styled sidebar nav + on-this-page TOC, written next to each `.md`). The renderer needs `pandoc` and `node`; `install.sh` stages it at `~/.claude/commands/tandem/_assets/` and the learning commands seed it into `study/_assets/` on first use.
 
 Concepts are their own git repo. Push to GitHub as a personal knowledge portfolio. Projects reference concepts via `.claude/docs/concepts.yaml` — projects don't store copies.
 

@@ -77,6 +77,27 @@ Tandem's concept library lives at `~/Developer/concepts/` — separate from any 
 - Confidence ratings (`shaky | solid | teach-it`) drive study guide ordering
 - The library becomes a personal knowledge portfolio you can push to GitHub
 
+## The three-layer learning stack
+
+Learning runs through three commands, each a different granularity:
+
+```
+/tandem:learn   →   /tandem:teach   →   /tandem:study   →   /tandem:rollup study-guide
+   plan               acquire             consolidate          exam prep
+```
+
+- **`/tandem:learn`** captures the *plan* — scope, goals, resources, sequence — as decisions in the project. It plans; it doesn't teach.
+- **`/tandem:teach`** *acquires* the material. It drives a layered, anchor-first curriculum in your library's `study/` tree (`<library>/study/`), authoring one prose layer at a time or delivering an existing layer and quizzing you on it. A curriculum is 4–7 layers that teach a whole topic.
+- **`/tandem:study`** *consolidates* a single idea into a Feynman-tested, confidence-rated **atom** at `<library>/<topic>/`. An atom cites its curriculum layer via `source: study/<topic>/<layer-slug>`, so provenance flows plan → layer → atom.
+
+Two content types, **one library** — the same `~/Developer/concepts/` (override `TANDEM_CONCEPTS_DIR`) that holds atoms also holds curricula, under a `study/` subtree. Curricula are topics taught in layers; atoms are single ideas. A layer teaches; an atom locks in one idea from it. There's no second repo — you name your library whatever you like (one user keeps theirs at `~/Developer/garden`), but Tandem only ever knows about the one.
+
+**A note on the word "study."** It carries two unrelated meanings, so keep them straight:
+- The library's `study/` *folder* is where curricula live — the output of `/tandem:teach`.
+- The `/tandem:study` *command* is the Feynman consolidation test — it produces atoms, not curricula.
+
+When in doubt: "the `study/` tree" = teaching content, "`/tandem:study`" = the consolidation test.
+
 ## What this is not
 
 - Not a project management tool

@@ -40,6 +40,17 @@ Then ask topic placement:
 
 Use a kebab-case slug for the filename. Example: "BGP path selection" → `bgp-path-selection.md`. Confirm before writing.
 
+Then capture **provenance**. Concepts often come from a curriculum layer that `/tandem:teach` routed you here from. Both curricula and atoms live in the same library (`<library>`, default `~/Developer/concepts/`, override `TANDEM_CONCEPTS_DIR`): curricula under `<library>/study/<topic>/`, atoms under `<library>/<topic>/`. Check the `study/` tree for this topic; if a written layer plausibly covers this concept, offer it:
+
+> "Did this come from a curriculum layer? Written layers under `study/<topic>`: [list `NN-<slug>` from the README]. If so I'll cite it as the source (`study/<topic>/<layer-slug>`), which links the atom back to where it was taught. Or name another source (book/video/doc), or none."
+
+Set the frontmatter `source:` accordingly:
+- From a curriculum layer → `study/<topic>[/<lens>]/<layer-slug>` (e.g., `study/networking/gcp/03-vm-networking`).
+- From external material → the freeform reference (book/video/doc).
+- None → leave `~`.
+
+Don't belabor this — one question, sensible default (the layer that routed here, if obvious), move on.
+
 ### 2. Check for existing concept
 
 If `~/Developer/concepts/<topic>/<concept-slug>.md` already exists, surface it:
@@ -134,7 +145,7 @@ topic: <topic>
 subtopic: ~
 date: YYYY-MM-DD
 last_refined: YYYY-MM-DD
-source: <reference — book/video/doc, optional>
+source: <provenance — `study/<topic>/<layer-slug>` if taught by /tandem:teach, else book/video/doc, else ~>
 confidence: shaky | solid | teach-it
 tags: []
 ---
@@ -246,6 +257,7 @@ Render rules:
 - `[[topic/slug]]` connection links → `<a href="../<topic>/_html/<slug>.html">`.
 - `<details class="flashcard">` blocks in MD are passed through to HTML as-is (they render in both).
 - Confidence class on `<span>` matches the rating: `shaky`, `solid`, or `teach-it`.
+- `source:` renders as plain text in the `<span>Source: …</span>` meta line. For `study/<topic>/<layer-slug>` provenance the curriculum lives in the same library, so you *may* hyperlink it relatively (from an atom at `<library>/<topic>/_html/`, that's `../../study/<topic>/<lens>/<layer-slug>.html`) — but only if that layer's HTML actually exists. Not every curriculum is HTML-rendered; if the target `.html` isn't there, render the `study/…` string as plain text. The string is the pointer either way.
 
 ## Self-filter on capture
 
