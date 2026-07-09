@@ -15,3 +15,8 @@
 # Backups left by sed -i ''
 *.bak
 README.md.old
+
+.claude/
+
+# Generated skill-adapter output (regenerate with adapters/skill/build-skill.mjs)
+adapters/skill/dist/
