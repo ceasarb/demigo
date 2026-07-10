@@ -439,3 +439,31 @@ footer.site {
   color: var(--ink-muted);
   line-height: 1.5;
 }
+
+/* Decision-card badges (confidence + status) — docs renderer.
+   Trust tiers via the theme's tip/note/warn pairs so they read in both modes. */
+.card .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  background: var(--panel);
+  white-space: nowrap;
+}
+/* ran-green / user-endorsed → trust (green) */
+.badge.conf-executed,
+.badge.conf-confirmed        { background: var(--tip);  border-color: var(--tip-border); }
+/* citation-verified / source-corroborated → informational (blue) */
+.badge.conf-stated-verified,
+.badge.conf-corroborated     { background: var(--note); border-color: var(--note-border); }
+/* couldn't run here → caution (amber) */
+.badge.conf-execution-skipped { background: var(--warn); border-color: var(--warn-border); }
+/* non-active lifecycle → caution (amber) */
+.badge.status-superseded,
+.badge.status-deprecated,
+.badge.status-draft          { background: var(--warn); border-color: var(--warn-border); }

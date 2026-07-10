@@ -9,27 +9,34 @@
 //   node study/_assets/build.mjs distributed-systems     # render one topic
 //   node study/_assets/build.mjs networking/gcp          # render one section
 //
+// Format-agnostic plumbing (pandoc, TOC, links, template) lives in ./lib.mjs
+// and is shared with build-docs.mjs. This file owns the study-tree specifics:
+// layer discovery, curriculum labels, sidebar/sections nav, breadcrumbs, and
+// the section/topic/root index builders.
+//
 // Requires: pandoc (gfm), node.
 
-import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { dirname, join, relative, basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  isHidden, labelize, h1Of, pandocConvert, buildTOC, escapeHtml,
+  rewriteLinks, convertDefinitionLists, extractH1, readTitle, readDescription,
+  cardGrid, renderTemplate, normalizeMermaid, hasMermaid,
+  cssBaseFor as libCssBaseFor, rootBaseFor as libRootBaseFor,
+} from './lib.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = resolve(dirname(__filename), '..'); // the study/ dir
 const TEMPLATE = readFileSync(join(ROOT, '_assets', 'template.html'), 'utf8');
 
-const ACRONYMS = new Set([
-  'gcp', 'aws', 'azure', 'ncc', 'vpc', 'dns', 'nat', 'iam', 'ci', 'cd', 'cicd',
-  'ai', 'eda', 'idp', 'sdlc', 'api', 'sre', 'cap', 'gpu', 'k8s', 'ado',
-]);
+// ROOT/TEMPLATE-bound wrappers over the shared plumbing, so call sites below
+// stay identical to the pre-extraction renderer.
+const render = (opts) => renderTemplate(TEMPLATE, opts);
+const cssBaseFor = (htmlPath) => libCssBaseFor(ROOT, htmlPath);
+const rootBaseFor = (htmlPath) => libRootBaseFor(ROOT, htmlPath);
 
 // --- Discovery --------------------------------------------------------------
-
-function isHidden(name) {
-  return name.startsWith('_') || name.startsWith('.');
-}
 
 // A "section" is a directory that directly contains at least one numbered
 // layer file (starts with a digit: 00_anchor, 01-layer, 02b-…).
@@ -74,15 +81,6 @@ function listTopics() {
 
 // --- Label helpers ----------------------------------------------------------
 
-function labelize(seg) {
-  return seg
-    .split(/[-_ ]+/)
-    .map((w) => (ACRONYMS.has(w.toLowerCase())
-      ? w.toUpperCase()
-      : w.charAt(0).toUpperCase() + w.slice(1)))
-    .join(' ');
-}
-
 // Topic label: first the topic README H1 (stripped of "— Study Guide"), else
 // the dir name labelized.
 function topicLabel(topicDir) {
@@ -98,143 +96,6 @@ function sectionLabel(topicDir, sectionDir) {
   if (sectionDir === topicDir) return tl;
   const lens = relative(topicDir, sectionDir).split('/').map(labelize).join(' / ');
   return `${tl} — ${lens}`;
-}
-
-function h1Of(mdPath) {
-  try {
-    const m = readFileSync(mdPath, 'utf8').match(/^#\s+(.+)$/m);
-    return m ? m[1].trim() : null;
-  } catch {
-    return null;
-  }
-}
-
-// --- Reused pandoc / html helpers (from the networking renderer) ------------
-
-function pandocConvert(mdPath) {
-  return execFileSync('pandoc', [
-    '--from=gfm+yaml_metadata_block',
-    '--to=html5',
-    '--syntax-highlighting=none',
-    '--section-divs',
-    mdPath,
-  ], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
-}
-
-function buildTOC(body) {
-  const headings = [];
-  // pandoc --section-divs puts the id on the <section> wrapper, not the heading:
-  //   <section id="…" class="level2"><h2>Title</h2>…
-  const re = /<section\s+id="([^"]+)"\s+class="level([23])"[^>]*>\s*<h[23][^>]*>([\s\S]*?)<\/h[23]>/g;
-  let m;
-  while ((m = re.exec(body)) !== null) {
-    headings.push({ id: m[1], level: parseInt(m[2], 10), text: m[3].replace(/<[^>]*>/g, '').trim() });
-  }
-  if (headings.length === 0) return '';
-  const items = [];
-  let inSub = false;
-  for (const h of headings) {
-    if (h.level === 2) {
-      if (inSub) { items.push('</ul></li>'); inSub = false; }
-      items.push(`<li><a href="#${h.id}">${escapeHtml(h.text)}</a>`);
-    } else {
-      if (!inSub) { items.push('<ul>'); inSub = true; }
-      items.push(`<li><a href="#${h.id}">${escapeHtml(h.text)}</a></li>`);
-    }
-  }
-  if (inSub) items.push('</ul></li>');
-  let html = '<ul>';
-  for (const t of items) html += t;
-  const opens = (html.match(/<li>/g) || []).length;
-  const closes = (html.match(/<\/li>/g) || []).length;
-  for (let i = 0; i < opens - closes; i++) html += '</li>';
-  html += '</ul>';
-  return html;
-}
-
-function escapeHtml(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function decodeEntities(s) {
-  return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-}
-
-function rewriteLinks(body) {
-  return body.replace(/href="([^"#?]+\.md)(#[^"]*)?"/g, (m, path, frag = '') =>
-    `href="${path.replace(/\.md$/, '.html')}${frag}"`);
-}
-
-// "**Term**: desc" / "**Term** — desc" lists → styled definition lists.
-function convertDefinitionLists(body) {
-  const ulRe = /<ul>((?:(?!<ul>|<\/ul>)[\s\S])*?)<\/ul>/g;
-  const itemRe = /^<strong>([^<][^<]*?)<\/strong>(?:\s*:\s*|\s+—\s+|\s+&mdash;\s+)([\s\S]+)$/;
-  return body.replace(ulRe, (match, inner) => {
-    const items = [];
-    const liRe = /<li>([\s\S]*?)<\/li>/g;
-    let m;
-    while ((m = liRe.exec(inner)) !== null) items.push(m[1].trim());
-    if (items.length < 2) return match;
-    const parsed = items.map((raw) => {
-      const m2 = raw.match(itemRe);
-      if (!m2) return { def: false, raw };
-      const term = m2[1].trim();
-      if (/[.?!]$/.test(term) || term.length > 60) return { def: false, raw };
-      return { def: true, term, desc: m2[2].trim() };
-    });
-    const matched = parsed.filter((p) => p.def).length;
-    if (matched < Math.max(2, Math.ceil(items.length * 0.6))) return match;
-    const rendered = parsed.map((p) => (p.def
-      ? `  <li class="defitem"><span class="term">${p.term}</span><span class="defbody">${p.desc}</span></li>`
-      : `  <li class="defitem-plain">${p.raw}</li>`)).join('\n');
-    return `<ul class="deflist">\n${rendered}\n</ul>`;
-  });
-}
-
-function extractH1(body) {
-  const m = body.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-  return m ? decodeEntities(m[1].replace(/<[^>]*>/g, '').trim()) : null;
-}
-
-function readTitle(mdPath) {
-  return h1Of(mdPath) || basename(mdPath, '.md');
-}
-
-function readDescription(mdPath) {
-  try {
-    const lines = readFileSync(mdPath, 'utf8').split('\n');
-    let pastH1 = false;
-    const buf = [];
-    for (const line of lines) {
-      if (!pastH1) { if (line.startsWith('# ')) pastH1 = true; continue; }
-      const t = line.trim();
-      if (!t) { if (buf.length) break; continue; }
-      if (t.startsWith('#') || t.startsWith('```')) { if (buf.length) break; continue; }
-      buf.push(t);
-      if (buf.join(' ').length > 200) break;
-    }
-    let s = buf.join(' ').replace(/[*_`]/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
-    if (s.length > 220) s = s.slice(0, 217) + '…';
-    return s;
-  } catch {
-    return '';
-  }
-}
-
-// --- Path helpers relative to ROOT (study/) ---------------------------------
-
-function depthOf(htmlPath) {
-  return relative(ROOT, htmlPath).split('/').length - 1;
-}
-function cssBaseFor(htmlPath) {
-  const d = depthOf(htmlPath);
-  return d === 0 ? '_assets/' : '../'.repeat(d) + '_assets/';
-}
-function rootBaseFor(htmlPath) {
-  const d = depthOf(htmlPath);
-  return d === 0 ? '' : '../'.repeat(d);
 }
 
 // --- Nav / crumbs -----------------------------------------------------------
@@ -269,21 +130,6 @@ function buildCrumbs(htmlPath, sectionDir) {
   return parts.join(' &nbsp;›&nbsp; ');
 }
 
-function render(opts) {
-  return TEMPLATE
-    .replace(/\$pagetitle\$/g, escapeHtml(opts.pageTitle))
-    .replace(/\$sectionlabel\$/g, escapeHtml(opts.sectionLabel))
-    .replace(/\$navlinks\$/g, opts.navLinks)
-    .replace(/\$sectionsnav\$/g, opts.sectionsNav)
-    .replace(/\$cssbase\$/g, opts.cssBase)
-    .replace(/\$rootbase\$/g, opts.rootBase)
-    .replace(/\$crumbs\$/g, opts.crumbs)
-    .replace(/\$footer\$/g, escapeHtml(opts.footer))
-    .replace(/\$body\$/g, opts.body)
-    .replace(/\$if\(toc\)\$([\s\S]*?)\$endif\$/g, (m, inner) =>
-      (opts.toc ? inner.replace(/\$toc\$/g, opts.toc) : ''));
-}
-
 const FOOTER = 'Concept library · study curriculum · rendered from markdown';
 
 // --- Page + index builders --------------------------------------------------
@@ -292,6 +138,7 @@ function buildPage(mdPath, sectionDir, topicDir) {
   let body = pandocConvert(mdPath);
   body = rewriteLinks(body);
   body = convertDefinitionLists(body);
+  body = normalizeMermaid(body);
   const toc = buildTOC(body);
   const title = extractH1(body) || basename(mdPath, '.md');
   const htmlPath = mdPath.replace(/\.md$/, '.html');
@@ -306,18 +153,9 @@ function buildPage(mdPath, sectionDir, topicDir) {
     footer: FOOTER,
     body,
     toc,
+    mermaid: hasMermaid(body),
   }));
   console.log('  ' + relative(ROOT, htmlPath));
-}
-
-function cardGrid(entries) {
-  // entries: [{ href, num, title, desc }]
-  const cards = entries.map((e) => `      <a class="card" href="${e.href}">
-        <span class="num">${escapeHtml(e.num)}</span>
-        <span class="title">${escapeHtml(e.title)}</span>
-        <span class="desc">${escapeHtml(e.desc)}</span>
-      </a>`).join('\n');
-  return `<div class="section-grid">\n${cards}\n</div>`;
 }
 
 function writeIndex(htmlPath, { label, intro, body, sectionDir, topicDir, currentTopic }) {

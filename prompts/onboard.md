@@ -145,6 +145,25 @@ Build a map of the target before extracting anything:
 
 Capture the current commit for stamping: `git -C <target> rev-parse HEAD`.
 
+**Ecosystem signal map.** The same claim — "what deps," "what version," "how to
+build/test" — lives in different files per language. Detect the ecosystem from its
+manifest, then read the ecosystem-appropriate sources. Do not assume Go (or any one
+language):
+
+| Ecosystem | Deps / version source | Build / test entry points |
+|---|---|---|
+| Go | `go.mod`, `go.sum` | `Makefile`, `go build`, `go test`, CI workflow |
+| Node / TS | `package.json` (deps, `engines`), lockfile, `.nvmrc` | `package.json` scripts, `Makefile`, `Dockerfile` |
+| Python | `pyproject.toml` / `setup.cfg` / `requirements*.txt`, `.python-version` | `tox.ini`, `noxfile.py`, `Makefile`, `pytest` |
+| Rust | `Cargo.toml`, `Cargo.lock` | `cargo build`, `cargo test`, `Makefile` |
+| JVM | `pom.xml` / `build.gradle`, `.tool-versions` / `.sdkmanrc` | `mvn` / `gradle` targets, `Makefile` |
+| Ruby | `Gemfile`, `.ruby-version` | `Rakefile`, `bundle exec` |
+| Polyglot / infra | `.tool-versions`, `Dockerfile`, `docker-compose.yml`, CI matrix | container build, CI jobs |
+
+If the repo mixes ecosystems (a monorepo), extract **per component**: a `stated`
+ADR can be scoped to a subtree ("the `web/` package uses …"). Never flatten a
+polyglot repo into a single language's assumptions.
+
 ### Step 2 — Extract `stated` claims
 
 Scan the oriented map for **structural facts the code literally shows** — the kind
@@ -188,14 +207,40 @@ workflows). These are validated by *doing*:
      tool's whole point is not lying about setup).
    - **Fails because the environment genuinely can't run it** (missing infra,
      credentials, external services) → mark `confidence: execution-skipped` with
-     the reason. Do not treat as a doc error. *(The formal fallback is a RUN task;
-     until then, note it plainly.)*
-4. This step **is PDR-003's success bar**: a green build + test run driven by the
-   documented steps is the contributor-ready proof.
+     the reason. Do not treat as a doc error. See **Execution fallback** below.
+4. This step **is PDR-003's success bar** *when the environment allows it*: a green
+   build + test run driven by the documented steps is the contributor-ready proof.
+   When it can't run here, the fallback below keeps the run honest rather than
+   failing it.
 
 **Guardrails:** time-box long builds; run only declared-dependency fetches and
 build/test commands — never destructive or arbitrary networked commands; anything
 requiring secrets or live external services is `execution-skipped`, not failed.
+
+#### Execution fallback — when the build can't run here
+
+Execution validation is **best-effort, not a hard gate.** A repo may be un-runnable
+in this environment for reasons that are nobody's fault: a licensed toolchain, cloud
+credentials, a running datastore, a specific OS/arch, or a multi-service compose
+stack. When that happens, **degrade — never fail the whole run:**
+
+1. **Decide the reason.** Separate "the documented steps are wrong" (a doc error —
+   correct them in the guide) from "the environment can't run this here" (missing
+   infra / secrets / services / toolchain — a skip). When genuinely unsure, it is a
+   skip, not a green.
+2. **Record the skip on the claim.** Mark the procedural ADR `confidence:
+   execution-skipped`; in `Evidence`, cite the documented command **and** one line
+   on why it couldn't run and what it would need (`requires a running Postgres`,
+   `needs a licensed Oracle client`, `depends on an internal artifact registry`).
+3. **Surface it in the guide.** Add the skipped tier to **Troubleshooting &
+   gotchas** (what a newcomer will hit → what's actually required). If the *golden
+   path itself* couldn't be fully executed, say so plainly in "What you'll end up
+   with" — don't imply a verified run you didn't achieve.
+4. **PDR-003, honestly.** A guide whose runnable steps are marked `executed` and
+   whose un-runnable steps are marked `execution-skipped` **with the requirement
+   stated** is still contributor-ready — it doesn't lie. A guide that claims a green
+   run it never achieved is not. Never fabricate an `executed`: the absence of a
+   green run is `execution-skipped`, not a silent pass.
 
 ### Step 5 — Corroboration search + Open Questions (validator + holding pen)
 

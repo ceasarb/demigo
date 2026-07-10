@@ -32,5 +32,9 @@ $body$
       <footer class="site">$footer$</footer>
     </main>
   </div>
+  $if(mermaid)$
+  <script src="$cssbase$mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });</script>
+  $endif$
 </body>
 </html>

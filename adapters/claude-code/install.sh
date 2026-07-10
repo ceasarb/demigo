@@ -100,10 +100,10 @@ if [[ -d "${RENDERER_SRC}" ]]; then
   rm -rf "${RENDERER_DST}"
   if [[ "${MODE}" == "--copy" ]] || [[ "${MODE}" == "copy" ]]; then
     cp -R "${RENDERER_SRC}" "${RENDERER_DST}"
-    echo "   ✓ Copied  renderer/ (build.mjs, template.html, style.css)"
+    echo "   ✓ Copied  renderer/ (build.mjs, build-docs.mjs, lib.mjs, template.html, style.css, mermaid.min.js)"
   else
     ln -s "${RENDERER_SRC}" "${RENDERER_DST}"
-    echo "   ✓ Linked  renderer/ (build.mjs, template.html, style.css)"
+    echo "   ✓ Linked  renderer/ (build.mjs, build-docs.mjs, lib.mjs, template.html, style.css, mermaid.min.js)"
   fi
 else
   echo
