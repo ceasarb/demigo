@@ -47,6 +47,14 @@ If invoked with an argument, restate it: *"Forging an agent that [phrase]. Let's
 
 Then pin the **skill name** (kebab-case, e.g. `contributor-onboarder`) — it's the bundle directory name and the `SKILL.md` `name:`. Confirm it before writing anything.
 
+**Re-run check.** Before writing anything, look at whether `<skill-name>/` already exists at the target location:
+
+- **Fresh** (no such dir): proceed normally; the decision trail starts at `adr-001`.
+- **Exists**: do NOT silently overwrite. Ask which the user wants:
+  - **Refine** — keep the bundle and re-open specific facets. Facet edits update `SKILL.md` in place; a *reversed* design decision **supersedes** its ADR (mark the old one `superseded`, append a new higher-numbered one) rather than being edited away — the trail is append-only, like Tandem's own decisions.
+  - **Fresh** — replace the bundle entirely, after confirming the user accepts losing the existing trail.
+- A collision with an *unrelated* sibling skill in a `skills/` registry is a naming clash, not a re-run — offer a different name.
+
 ### 2. Drive the six facets
 
 One or two questions at a time — do NOT dump a six-part survey. Reflect each answer back before moving on. Rough order: trigger → task → tools → guardrails → fail-safe → output. Adapt to the agent.
@@ -70,7 +78,9 @@ An agent with no guardrails and no fail-safe is not a forged skill; it's an unbo
 
 ### 3. Record the design trail as bundle-local ADRs
 
-As non-obvious facet decisions land (a restricted tool set, a hard guardrail, a stop-vs-guess choice), capture each as an ADR **inside the skill's own bundle** — `<skill-name>/decisions/adr-00N-*.md`. Number them **local to the bundle** (scan the bundle's own `decisions/`, not the host project's). This is the same decision→artifact machinery Tandem already uses, pointed at the skill's folder so the *why* travels with the skill.
+As non-obvious facet decisions land (a restricted tool set, a hard guardrail, a stop-vs-guess choice), capture each as an ADR **inside the skill's own bundle** — `<skill-name>/decisions/adr-00N-*.md`. This is the same decision→artifact machinery Tandem already uses, pointed at the skill's folder so the *why* travels with the skill.
+
+**Numbering is local to THIS bundle.** Compute the next N by scanning **only** `<skill-name>/decisions/` for the highest existing `adr-NNN` and adding one; a fresh bundle starts at `001`. Never derive N from the host Tandem project's `.claude/docs/decisions/`, and never from a *sibling* skill's `decisions/` in the same `skills/` registry — each skill's trail is numbered independently, so two skills sitting side by side both legitimately own an `adr-001`.
 
 Not every facet needs an ADR — write one when there was a real alternative the user said no to (see `/decide-tech` self-filter).
 
@@ -91,6 +101,14 @@ Write the bundle in place (see **Bundle layout** and **Facet → SKILL.md mappin
 - [ ] `<skill-name>/decisions/` holds an ADR for every non-obvious facet decision, numbered local to the bundle.
 - [ ] `<skill-name>/README.md` written.
 - [ ] The bundle is self-contained — decisions + README travel with it, and nothing was written into the host project's `.claude/docs/`.
+
+**Self-validate `SKILL.md` before declaring done.** After writing it, re-read the file and confirm:
+
+- the frontmatter block parses — opens and closes with `---`;
+- `name` is present, non-empty, and matches the bundle directory name (kebab-case);
+- `description` is present, non-empty, and a single line (it is the trigger an orchestrator reads to decide invocation).
+
+If any check fails, fix the file and re-validate — never hand off a skill whose frontmatter won't load.
 
 If any box is unchecked, you are not done — go back and close it. When all are checked, tell the user where the bundle is and how to install it (copy `<skill-name>/` into a Claude Code skills location).
 
