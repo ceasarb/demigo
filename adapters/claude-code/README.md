@@ -31,13 +31,17 @@ The installer creates symlinks (or copies) from `prompts/*.md` into `~/.claude/c
 ├── design.md
 ├── discovery.md
 ├── learn.md
+├── onboard.md
 ├── plan.md
 ├── pull.md
 ├── refine.md
+├── render.md
 ├── retro.md
 ├── rollup.md
 ├── scaffold.md
-└── study.md
+├── skill-forge.md
+├── study.md
+└── teach.md
 ```
 
 ## Namespacing

@@ -1,8 +1,14 @@
 # Skill adapter
 
-Translate a Tandem prompt (`prompts/<name>.md`) into a Claude Code **Skill**
-(`SKILL.md`). Per ADR-001, the prompt is the single source of truth; a skill is a
+Translate an **existing** Tandem prompt (`prompts/<name>.md`) into a Claude Code
+**Skill** (`SKILL.md`). The prompt is the single source of truth; a skill is a
 *projection* of it — regenerate, don't hand-edit.
+
+> **Not to be confused with `/tandem:skill-forge`.** This adapter mechanically
+> projects a prompt Tandem already has into a skill. `/tandem:skill-forge` is the
+> opposite motion: a conversation that *authors a brand-new, bespoke* agent skill
+> from scratch (with its own decision trail) as a deliverable. Reach for the forge
+> to design an agent; reach for this adapter to mirror an existing command.
 
 ## Why this exists
 

@@ -15,13 +15,17 @@ tandem/
 ├── prompts/                    # source-of-truth markdown (the actual framework)
 ├── adapters/
 │   ├── claude-code/            # install as Claude Code slash commands (/tandem:*)
-│   └── cursor/                 # (planned) install as Cursor rules
+│   ├── cursor/                 # (planned) install as Cursor rules
+│   └── skill/                  # project a Tandem prompt into a Claude Code SKILL.md
 ├── styles/
 │   └── concept-style.css       # shared style for rendered concept-atom HTML (/tandem:study)
-├── renderer/                   # shared curriculum renderer (/tandem:teach) — seeded into the library
-│   ├── build.mjs               #   topic-agnostic MD→HTML builder (needs pandoc + node)
+├── renderer/                   # shared MD→HTML renderers (need pandoc + node)
+│   ├── build.mjs               #   curriculum builder (/tandem:teach) — seeded into the library
+│   ├── build-docs.mjs          #   project-docs builder (/tandem:render)
+│   ├── lib.mjs                 #   shared rendering helpers
 │   ├── template.html           #   page shell (sidebar nav + on-this-page TOC)
-│   └── style.css               #   curriculum stylesheet
+│   ├── style.css               #   stylesheet
+│   └── mermaid.min.js          #   vendored client-side Mermaid (offline diagrams)
 ├── docs/
 │   └── methodology.md          # long-form on the philosophy
 ├── install.sh                  # convenience wrapper → adapters/claude-code/install.sh
@@ -34,7 +38,7 @@ The `prompts/` directory is *the framework*. The adapters are distribution mecha
 ## Install (Claude Code)
 
 ```bash
-git clone https://github.com/<your-user>/tandem.git ~/Developer/tandem
+git clone https://github.com/ceasarb/tandem.git ~/Developer/tandem
 cd ~/Developer/tandem
 ./install.sh
 ```
@@ -88,6 +92,7 @@ All top-of-funnel commands drive a conversation, draft PDRs/ADRs inline, and ask
 | `/tandem:decide-product` | Focused PDR interview. Direct invocation or called inline. |
 | `/tandem:decide-tech` | Focused ADR interview. Direct invocation or called inline. |
 | `/tandem:refine <ID>` | Iterate on an existing decision. In-place if unshipped; supersede if shipped. |
+| `/tandem:onboard` | **Existing codebase.** Reverse-engineer it into evidence-cited ADRs + a contributor onboarding guide. Tandem's brownfield on-ramp. |
 
 ### Concept library management
 
@@ -107,6 +112,18 @@ Views are always regenerated, never hand-edited.
 | `/tandem:rollup sad` | Solution Architecture view from active ADRs |
 | `/tandem:rollup study-guide <topic>` | Aggregated HTML study guide from concepts (for exam prep) |
 | `/tandem:plan <phase>` | CRAWL/WALK/RUN delivery plan; 5–25 min tasks with energy tags; first WALK task is deploy |
+
+### Render & publish
+
+| Command | Produces |
+|---|---|
+| `/tandem:render` | A navigable static HTML site from a project's `.claude/docs/` (decisions, generated views, onboarding guide). Local, static, read-only; Mermaid diagrams render offline. |
+
+### Forge agent skills
+
+| Command | Produces |
+|---|---|
+| `/tandem:skill-forge` | A bespoke, agent-invocable **skill bundle**. A convergent interview pins one autonomous agent to six facets (trigger · task · tools · guardrails · fail-safe · output) and emits a self-contained `SKILL.md` + decision trail to hand off. Tandem's engine aimed at authoring agents — not distributing Tandem itself. |
 
 ### Close the loop
 
