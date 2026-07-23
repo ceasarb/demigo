@@ -3,21 +3,21 @@ description: The one testing verb for exam prep. Generates a diagnostic grounded
 argument-hint: "<exam-slug> [domain-id or domain-name]"
 ---
 
-# /tandem:retest
+# /demi:retest
 
 The **single testing verb** of the exam-prep track (ADR-009). It measures where
 you stand on an exam and writes the result; it does not teach, and it does not
 tell you whether to sit the exam.
 
 **Baseline = retest on empty state.** There is no separate `/baseline` command.
-The first time you run `/tandem:retest <exam-slug>` against a fresh overlay, it
+The first time you run `/demi:retest <exam-slug>` against a fresh overlay, it
 covers every domain and establishes your baseline. Later runs re-measure — a
 single domain or the whole exam — and update the same state.
 
 ```
-/tandem:exam                         sets up the blueprint, reads readiness, shows the dashboard
+/demi:exam                         sets up the blueprint, reads readiness, shows the dashboard
    │  triggers ↓ (baseline) and recommends ↓ (re-measure)
-/tandem:retest                       generate diagnostic → capture answer + confidence → score → write
+/demi:retest                       generate diagnostic → capture answer + confidence → score → write
    │  writes ↓
 readiness.yaml                       per-domain confidence-weighted 2×2 (PDR-010)
 ```
@@ -30,13 +30,13 @@ records are saved under `diagnostics/` for provenance and review.
 ## Usage
 
 ```
-/tandem:retest gcp-pca                       # whole exam (baseline if never tested)
-/tandem:retest gcp-pca D3                     # re-measure one domain by id
-/tandem:retest gcp-pca "Analyzing and optimizing…"   # …or by name
+/demi:retest gcp-pca                       # whole exam (baseline if never tested)
+/demi:retest gcp-pca D3                     # re-measure one domain by id
+/demi:retest gcp-pca "Analyzing and optimizing…"   # …or by name
 ```
 
-If the exam overlay doesn't exist yet, tell the user to run `/tandem:exam
-<exam-slug>` first — `/tandem:retest` measures a blueprint, it doesn't create one.
+If the exam overlay doesn't exist yet, tell the user to run `/demi:exam
+<exam-slug>` first — `/demi:retest` measures a blueprint, it doesn't create one.
 
 ## Flow
 
@@ -112,17 +112,17 @@ label; and **push a new entry onto `attempts[]`**. Set the top-level `updated`.
 retest updates **only** its one domain and leaves the others (and their history)
 untouched. Never drop `attempts[]` history.
 
-### 6. Hand back to `/tandem:exam`
+### 6. Hand back to `/demi:exam`
 
 Report the raw per-domain quadrant tallies for what was just measured, then hand
 off — **without** any go/no-go editorializing (PDR-011):
 
 > "Measured **<scope>**: <n> mastered · <n> fragile · <n> known-gap · **<n>
-> blind-spot**. Written to readiness. Run `/tandem:exam <exam-slug>` for the
+> blind-spot**. Written to readiness. Run `/demi:exam <exam-slug>` for the
 > updated readiness map and your next best move."
 
 Do not tell the learner they're ready or not ready — that framing belongs to the
-`/tandem:exam` dashboard, and even there it's evidence, not a verdict.
+`/demi:exam` dashboard, and even there it's evidence, not a verdict.
 
 ## What this command does NOT do
 
@@ -131,14 +131,14 @@ Do not tell the learner they're ready or not ready — that framing belongs to t
 - It does NOT reproduce supplied sample questions — they are a *style* reference
   only.
 - It does NOT teach or route — it measures and writes. Closing gaps is
-  `/tandem:teach` / `/tandem:study`, recommended by `/tandem:exam`.
+  `/demi:teach` / `/demi:study`, recommended by `/demi:exam`.
 - It does NOT compute the exam-wide readiness bar — it writes per-domain
-  measurements; the deadline-aware bar is assembled by `/tandem:exam` (PDR-011).
+  measurements; the deadline-aware bar is assembled by `/demi:exam` (PDR-011).
 - It does NOT give a go/no-go call.
-- It does NOT create a blueprint — run `/tandem:exam <exam-slug>` first.
+- It does NOT create a blueprint — run `/demi:exam <exam-slug>` first.
 
 ## Tone
 
 You're a fair proctor, not a coach mid-test. Ask cleanly, capture the confidence
 honestly, don't hint, don't console. The value is an unflinching measurement — the
-encouragement and strategy happen back in `/tandem:exam`.
+encouragement and strategy happen back in `/demi:exam`.

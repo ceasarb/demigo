@@ -3,7 +3,7 @@ description: Focused concept-capture using the Feynman test. Drives "explain it 
 argument-hint: "<concept name>"
 ---
 
-# /tandem:study
+# /demi:study
 
 Capture ONE concept using the Feynman test. The conversation is the Feynman protocol — you explain the concept like you're teaching someone with no background, I probe the layer beneath, we surface the gaps, then we write the consolidated explanation to your central concept library.
 
@@ -15,16 +15,16 @@ Output:
 ## Usage
 
 ```
-/tandem:study "BGP path selection"
-/tandem:study "VPC peering vs Shared VPC"
-/tandem:study                                  # ask what to study
+/demi:study "BGP path selection"
+/demi:study "VPC peering vs Shared VPC"
+/demi:study                                  # ask what to study
 ```
 
 ## Library location
 
-Default: `~/Developer/concepts/`. Override with `TANDEM_CONCEPTS_DIR` environment variable.
+Default: `~/Developer/concepts/`. Override with `DEMI_CONCEPTS_DIR` environment variable.
 
-If the library doesn't exist, run the bootstrap flow from `/tandem:learn` — don't error out.
+If the library doesn't exist, run the bootstrap flow from `/demi:learn` — don't error out.
 
 ## Flow
 
@@ -40,7 +40,7 @@ Then ask topic placement:
 
 Use a kebab-case slug for the filename. Example: "BGP path selection" → `bgp-path-selection.md`. Confirm before writing.
 
-Then capture **provenance**. Concepts often come from a curriculum layer that `/tandem:teach` routed you here from. Both curricula and atoms live in the same library (`<library>`, default `~/Developer/concepts/`, override `TANDEM_CONCEPTS_DIR`): curricula under `<library>/study/<topic>/`, atoms under `<library>/<topic>/`. Check the `study/` tree for this topic; if a written layer plausibly covers this concept, offer it:
+Then capture **provenance**. Concepts often come from a curriculum layer that `/demi:teach` routed you here from. Both curricula and atoms live in the same library (`<library>`, default `~/Developer/concepts/`, override `DEMI_CONCEPTS_DIR`): curricula under `<library>/study/<topic>/`, atoms under `<library>/<topic>/`. Check the `study/` tree for this topic; if a written layer plausibly covers this concept, offer it:
 
 > "Did this come from a curriculum layer? Written layers under `study/<topic>`: [list `NN-<slug>` from the README]. If so I'll cite it as the source (`study/<topic>/<layer-slug>`), which links the atom back to where it was taught. Or name another source (book/video/doc), or none."
 
@@ -124,7 +124,7 @@ On **y**:
 
 If invoked from a project (current dir has `.claude/docs/`), ask:
 
-> "Pull this concept into the current project (`<project-name>`)? It'll show up in `/tandem:concepts` and be available for `/tandem:rollup study-guide`. (y / n)"
+> "Pull this concept into the current project (`<project-name>`)? It'll show up in `/demi:concepts` and be available for `/demi:rollup study-guide`. (y / n)"
 
 On **y**: add to `.claude/docs/concepts.yaml`:
 
@@ -145,7 +145,7 @@ topic: <topic>
 subtopic: ~
 date: YYYY-MM-DD
 last_refined: YYYY-MM-DD
-source: <provenance — `study/<topic>/<layer-slug>` if taught by /tandem:teach, else book/video/doc, else ~>
+source: <provenance — `study/<topic>/<layer-slug>` if taught by /demi:teach, else book/video/doc, else ~>
 confidence: shaky | solid | teach-it
 tags: []
 ---
@@ -174,7 +174,7 @@ tags: []
 
 ## Open questions
 
-<Things you don't fully understand yet. Naming them keeps them honest. Each is a future /tandem:study target.>
+<Things you don't fully understand yet. Naming them keeps them honest. Each is a future /demi:study target.>
 
 <!-- Optional flashcards block — only present if user opted in -->
 ## Flashcards

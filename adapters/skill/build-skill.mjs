@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Skill adapter — translate a Tandem prompt (prompts/<name>.md) into a Claude
+// Skill adapter — translate a Demigo prompt (prompts/<name>.md) into a Claude
 // Code Skill (SKILL.md), per ADR-001 ("author once as a prompt, distribute as a
 // skill via an adapter"). Source of truth stays in prompts/; this is a projection.
 //
 // Usage:
-//   node adapters/skill/build-skill.mjs prompts/onboard.md            # → dist/tandem-onboard/SKILL.md
+//   node adapters/skill/build-skill.mjs prompts/onboard.md            # → dist/demi-onboard/SKILL.md
 //   node adapters/skill/build-skill.mjs prompts/onboard.md --out DIR   # custom output root
 //
 // Requires: node (no external deps).
@@ -39,8 +39,8 @@ for (const line of frontRaw.split('\n')) {
 }
 
 const cmdName = basename(src).replace(/\.md$/, '');   // e.g. "onboard"
-const skillName = `tandem-${cmdName}`;                // skill id
-const title = `Tandem: ${cmdName.charAt(0).toUpperCase() + cmdName.slice(1)}`;
+const skillName = `demi-${cmdName}`;                // skill id
+const title = `Demigo: ${cmdName.charAt(0).toUpperCase() + cmdName.slice(1)}`;
 
 if (!front.description) {
   console.error(`✖ ${src} frontmatter has no 'description' — skills require one.`);
@@ -54,8 +54,8 @@ if (!front.description) {
 // no slash-command argument convention.
 const argNote = front['argument-hint']
   ? `\n**Arguments:** when invoked, treat the user's request as the argument described by \`${front['argument-hint']}\`. `
-    + `Equivalent Tandem command: \`/tandem:${cmdName} ${front['argument-hint']}\`.\n`
-  : `\n**Invocation:** equivalent to the Tandem command \`/tandem:${cmdName}\`.\n`;
+    + `Equivalent Demigo command: \`/demi:${cmdName} ${front['argument-hint']}\`.\n`
+  : `\n**Invocation:** equivalent to the Demigo command \`/demi:${cmdName}\`.\n`;
 
 const bodyStripped = body.replace(/^#\s+\/?\S.*\n/, '');   // drop the original H1
 
@@ -67,7 +67,7 @@ description: ${front.description}
 
 # ${title}
 ${argNote}
-> Generated from \`${src}\` by the Tandem skill adapter. Source of truth is the
+> Generated from \`${src}\` by the Demigo skill adapter. Source of truth is the
 > prompt; regenerate rather than editing this file (ADR-001).
 ${bodyStripped}`;
 

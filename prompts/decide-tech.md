@@ -5,7 +5,7 @@ argument-hint: "<the decision being made, in a phrase>"
 
 # /decide-tech
 
-Capture ONE technical decision as an ADR. Nygard-format, but with the Tandem lifecycle (in-place edit pre-ship, supersede post-ship — no approval gate).
+Capture ONE technical decision as an ADR. Nygard-format, but with the Demigo lifecycle (in-place edit pre-ship, supersede post-ship — no approval gate).
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # Claude Code adapter
 
-Installs Tandem prompts as Claude Code slash commands under the `/tandem:*` namespace.
+Installs Demigo prompts as Claude Code slash commands under the `/demi:*` namespace.
 
 ## Install
 
@@ -18,12 +18,12 @@ Or directly:
 ./adapters/claude-code/install.sh
 ```
 
-The installer creates symlinks (or copies) from `prompts/*.md` into `~/.claude/commands/tandem/`. After install, restart Claude Code; commands are live everywhere as `/tandem:<command>`.
+The installer creates symlinks (or copies) from `prompts/*.md` into `~/.claude/commands/demi/`. After install, restart Claude Code; commands are live everywhere as `/demi:<command>`.
 
 ## What gets installed
 
 ```
-~/.claude/commands/tandem/
+~/.claude/commands/demi/
 ├── brainstorm.md   →  prompts/brainstorm.md
 ├── concepts.md     →  prompts/concepts.md
 ├── decide-product.md
@@ -46,7 +46,7 @@ The installer creates symlinks (or copies) from `prompts/*.md` into `~/.claude/c
 
 ## Namespacing
 
-Commands install under `tandem/` so they appear as `/tandem:brainstorm`, `/tandem:study`, etc. This avoids collisions with:
+Commands install under `demi/` so they appear as `/demi:brainstorm`, `/demi:study`, etc. This avoids collisions with:
 
 - Claude Code built-ins (`/init`, `/run`, etc.)
 - Any other command set you may have installed
@@ -58,12 +58,12 @@ Commands install under `tandem/` so they appear as `/tandem:brainstorm`, `/tande
 ./install.sh --uninstall
 ```
 
-Removes `~/.claude/commands/tandem/` and nothing else.
+Removes `~/.claude/commands/demi/` and nothing else.
 
 ## Customizing the concept library location
 
-Tandem's `/tandem:learn` and `/tandem:study` commands use a central concept library at `~/Developer/concepts/` by default. Override with an environment variable in your shell rc file:
+Demigo's `/demi:learn` and `/demi:study` commands use a central concept library at `~/Developer/concepts/` by default. Override with an environment variable in your shell rc file:
 
 ```bash
-export TANDEM_CONCEPTS_DIR="$HOME/my-knowledge"
+export DEMI_CONCEPTS_DIR="$HOME/my-knowledge"
 ```

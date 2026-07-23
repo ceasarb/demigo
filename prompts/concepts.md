@@ -3,32 +3,32 @@ description: List concepts pulled into the current project (or, with --library, 
 argument-hint: "[--library] [--topic <topic>] [--confidence <shaky|solid|teach-it>]"
 ---
 
-# /tandem:concepts
+# /demi:concepts
 
 List and inspect concepts — either the ones pulled into the current project, or the full central library.
 
 ## Usage
 
 ```
-/tandem:concepts                              # list this project's pulled concepts
-/tandem:concepts --library                    # list everything in the central library
-/tandem:concepts --topic networking           # filter by topic
-/tandem:concepts --confidence shaky           # filter by confidence (study targets)
-/tandem:concepts --library --confidence shaky # cross-cut
+/demi:concepts                              # list this project's pulled concepts
+/demi:concepts --library                    # list everything in the central library
+/demi:concepts --topic networking           # filter by topic
+/demi:concepts --confidence shaky           # filter by confidence (study targets)
+/demi:concepts --library --confidence shaky # cross-cut
 ```
 
 Filters compose. Default scope is project-pulled; `--library` switches to the full library.
 
 ## Library location
 
-Default: `~/Developer/concepts/`. Override with `TANDEM_CONCEPTS_DIR`.
+Default: `~/Developer/concepts/`. Override with `DEMI_CONCEPTS_DIR`.
 
 ## Flow
 
 ### Project scope (default)
 
 1. Read `.claude/docs/concepts.yaml`. If it doesn't exist or `pulled:` is empty:
-   > "No concepts pulled into this project yet. Use `/tandem:pull <topic/slug>` to add one, or `/tandem:concepts --library` to browse the central library."
+   > "No concepts pulled into this project yet. Use `/demi:pull <topic/slug>` to add one, or `/demi:concepts --library` to browse the central library."
 
 2. For each pulled ID, read the corresponding `~/Developer/concepts/<topic>/<slug>.md` frontmatter. Collect: `concept:`, `confidence:`, `last_refined:`, and (computed) the path to the rendered HTML.
 
@@ -49,7 +49,7 @@ gcp/
 Where `[open]` is a clickable `file://` URL to the rendered HTML in the user's browser. Use `~/Developer/concepts/<topic>/_html/<slug>.html` resolved to absolute path.
 
 5. Footer line:
-   > "N pulled (M shaky, K solid, L teach-it). Use `/tandem:rollup study-guide <topic>` to generate a combined HTML study guide."
+   > "N pulled (M shaky, K solid, L teach-it). Use `/demi:rollup study-guide <topic>` to generate a combined HTML study guide."
 
 ### Library scope (--library)
 
@@ -69,8 +69,8 @@ After the list, offer a one-line menu:
 
 > "Actions:
 > - Open all shaky concepts in browser? (y)
-> - Generate a study guide for the most-shaky topic? (`/tandem:rollup study-guide <topic>`)
-> - Pull more concepts? (`/tandem:pull`)
+> - Generate a study guide for the most-shaky topic? (`/demi:rollup study-guide <topic>`)
+> - Pull more concepts? (`/demi:pull`)
 >
 > Or just done."
 
@@ -79,7 +79,7 @@ Don't auto-execute. The user picks.
 ## What this command does NOT do
 
 - It does NOT modify any files. Pure read.
-- It does NOT regenerate HTML. If a concept's HTML is missing or stale, surface it in the list (`[no render]`) and suggest re-running `/tandem:study <concept>` in refine mode.
+- It does NOT regenerate HTML. If a concept's HTML is missing or stale, surface it in the list (`[no render]`) and suggest re-running `/demi:study <concept>` in refine mode.
 - It does NOT open files automatically. It prints links/paths; the user clicks.
 
 ## Tone

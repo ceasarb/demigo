@@ -1,4 +1,4 @@
-// Shared, format-agnostic rendering plumbing for the Tandem renderers.
+// Shared, format-agnostic rendering plumbing for the Demigo renderers.
 //
 // Both build.mjs (study/ curricula) and build-docs.mjs (project .claude/docs/)
 // import from here. Nothing in this module knows about a specific tree shape:

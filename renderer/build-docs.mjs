@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Project-docs renderer for a Tandem project's .claude/docs/ tree.
+// Project-docs renderer for a Demigo project's .claude/docs/ tree.
 // Sibling of build.mjs (the study-curriculum renderer); shares the
 // format-agnostic plumbing in ./lib.mjs. Where build.mjs discovers numbered
 // curriculum layers, this discovers three fixed semantic buckets —
@@ -35,7 +35,7 @@ const DOCS = existsSync(join(rawTarget, '.claude', 'docs'))
 const OUT = join(DOCS, '_site');
 const ASSETS = join(OUT, '_assets');
 
-const FOOTER = 'Tandem · project documentation · rendered from .claude/docs';
+const FOOTER = 'Demigo · project documentation · rendered from .claude/docs';
 
 // Bucket definitions: how each fixed dir is discovered and labelled. The docs
 // tree is flat and semantic (not recursive/numbered like the study tree), so

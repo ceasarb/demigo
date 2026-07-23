@@ -1,14 +1,14 @@
 # Methodology
 
-> **Draft.** This document is a placeholder for the long-form treatment of Tandem's philosophy. The blog post covering the same material is (or will be) linked here once published.
+> **Draft.** This document is a placeholder for the long-form treatment of Demigo's philosophy. The blog post covering the same material is (or will be) linked here once published.
 
 ## The pitch
 
-Templates are a monologue. Tandem is a dialogue.
+Templates are a monologue. Demigo is a dialogue.
 
 Traditional documentation frameworks give you a template to fill in. You stare at the blank sections. Executive dysfunction wins. Nothing ships.
 
-Tandem inverts it: the AI interviews you, structured artifacts fall out as a side effect. You don't fill in a PRD — you have a conversation, and the PRD is a *generated view* over the decisions you made in that conversation.
+Demigo inverts it: the AI interviews you, structured artifacts fall out as a side effect. You don't fill in a PRD — you have a conversation, and the PRD is a *generated view* over the decisions you made in that conversation.
 
 ## The core insight
 
@@ -29,12 +29,12 @@ Approval gates exist for two reasons:
 
 In a personal or small-team context, both fail. Sequential thinking becomes procrastination on the first artifact. Audit trails become bureaucracy that nobody reads.
 
-Tandem drops gates because:
+Demigo drops gates because:
 - The self-filter at draft time catches noise upstream
 - Supersession preserves history without formal state tracking
 - Retrospectives close the loop naturally by naming the next move
 
-If you need a formal approval trail (client engagement, compliance work), Tandem plays with heavier frameworks — generate the PRD view from your PDRs and hand *that* to the approver.
+If you need a formal approval trail (client engagement, compliance work), Demigo plays with heavier frameworks — generate the PRD view from your PDRs and hand *that* to the approver.
 
 ## Why AI-as-interviewer works
 
@@ -71,7 +71,7 @@ When the answer is no, the model says so and suggests inlining as a code comment
 
 Knowledge doesn't respect project boundaries. Learning BGP once should benefit every project you touch afterward.
 
-Tandem's concept library lives at `~/Developer/concepts/` — separate from any project. Projects reference concepts via `concepts.yaml`; they don't copy the source. This means:
+Demigo's concept library lives at `~/Developer/concepts/` — separate from any project. Projects reference concepts via `concepts.yaml`; they don't copy the source. This means:
 
 - Single source of truth for what you know
 - Confidence ratings (`shaky | solid | teach-it`) drive study guide ordering
@@ -82,21 +82,21 @@ Tandem's concept library lives at `~/Developer/concepts/` — separate from any 
 Learning runs through three commands, each a different granularity:
 
 ```
-/tandem:learn   →   /tandem:teach   →   /tandem:study   →   /tandem:rollup study-guide
+/demi:learn   →   /demi:teach   →   /demi:study   →   /demi:rollup study-guide
    plan               acquire             consolidate          exam prep
 ```
 
-- **`/tandem:learn`** captures the *plan* — scope, goals, resources, sequence — as decisions in the project. It plans; it doesn't teach.
-- **`/tandem:teach`** *acquires* the material. It drives a layered, anchor-first curriculum in your library's `study/` tree (`<library>/study/`), authoring one prose layer at a time or delivering an existing layer and quizzing you on it. A curriculum is 4–7 layers that teach a whole topic.
-- **`/tandem:study`** *consolidates* a single idea into a Feynman-tested, confidence-rated **atom** at `<library>/<topic>/`. An atom cites its curriculum layer via `source: study/<topic>/<layer-slug>`, so provenance flows plan → layer → atom.
+- **`/demi:learn`** captures the *plan* — scope, goals, resources, sequence — as decisions in the project. It plans; it doesn't teach.
+- **`/demi:teach`** *acquires* the material. It drives a layered, anchor-first curriculum in your library's `study/` tree (`<library>/study/`), authoring one prose layer at a time or delivering an existing layer and quizzing you on it. A curriculum is 4–7 layers that teach a whole topic.
+- **`/demi:study`** *consolidates* a single idea into a Feynman-tested, confidence-rated **atom** at `<library>/<topic>/`. An atom cites its curriculum layer via `source: study/<topic>/<layer-slug>`, so provenance flows plan → layer → atom.
 
-Two content types, **one library** — the same `~/Developer/concepts/` (override `TANDEM_CONCEPTS_DIR`) that holds atoms also holds curricula, under a `study/` subtree. Curricula are topics taught in layers; atoms are single ideas. A layer teaches; an atom locks in one idea from it. There's no second repo — you name your library whatever you like (one user keeps theirs at `~/Developer/garden`), but Tandem only ever knows about the one.
+Two content types, **one library** — the same `~/Developer/concepts/` (override `DEMI_CONCEPTS_DIR`) that holds atoms also holds curricula, under a `study/` subtree. Curricula are topics taught in layers; atoms are single ideas. A layer teaches; an atom locks in one idea from it. There's no second repo — you name your library whatever you like (one user keeps theirs at `~/Developer/garden`), but Demigo only ever knows about the one.
 
 **A note on the word "study."** It carries two unrelated meanings, so keep them straight:
-- The library's `study/` *folder* is where curricula live — the output of `/tandem:teach`.
-- The `/tandem:study` *command* is the Feynman consolidation test — it produces atoms, not curricula.
+- The library's `study/` *folder* is where curricula live — the output of `/demi:teach`.
+- The `/demi:study` *command* is the Feynman consolidation test — it produces atoms, not curricula.
 
-When in doubt: "the `study/` tree" = teaching content, "`/tandem:study`" = the consolidation test.
+When in doubt: "the `study/` tree" = teaching content, "`/demi:study`" = the consolidation test.
 
 ## What this is not
 

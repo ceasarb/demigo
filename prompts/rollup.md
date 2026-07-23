@@ -78,7 +78,7 @@ If there are no sequencing PDRs at all, render the roadmap as a flat list of pha
 
 Aggregates concepts from the central library into a single styled HTML page for reading and exam prep. Unlike the other rollups, this writes HTML (not Markdown) and writes to the central library, not the project's `views/`.
 
-**Library location**: `~/Developer/concepts/` (override with `TANDEM_CONCEPTS_DIR`).
+**Library location**: `~/Developer/concepts/` (override with `DEMI_CONCEPTS_DIR`).
 
 **Source selection** depends on where the command runs:
 - **From within a project** (current dir has `.claude/docs/concepts.yaml`): use the project's `pulled:` set, filtered to the named topic. Falls back to "no concepts pulled for `<topic>`" if empty.
@@ -119,7 +119,7 @@ For `study-guide`:
 
 1. Resolve scope (project-pulled vs. full library — see above).
 2. Read concept files from `~/Developer/concepts/<topic>/`.
-3. If zero concepts: tell the user, suggest `/tandem:study <concept>` or `/tandem:pull <id>`. Do NOT write an empty guide.
+3. If zero concepts: tell the user, suggest `/demi:study <concept>` or `/demi:pull <id>`. Do NOT write an empty guide.
 4. Generate the HTML.
 5. Show the user a summary (N concepts: M shaky, K solid, L teach-it; longest section: ...).
 6. Ask: *"Write to `~/Developer/concepts/_html/study-guide-<topic>.html`? (y / n)"*

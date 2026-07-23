@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Install Tandem prompts as Claude Code slash commands under /tandem:*
+# Install Demigo prompts as Claude Code slash commands under /demi:*
 #
-# The markdown prompts in tandem/prompts/ become callable as
-# /tandem:scaffold, /tandem:brainstorm, /tandem:study, etc. inside Claude Code.
+# The markdown prompts in prompts/ become callable as
+# /demi:scaffold, /demi:brainstorm, /demi:study, etc. inside Claude Code.
 #
 # It also stages the shared curriculum renderer (renderer/) at
-# ~/.claude/commands/tandem/_assets/ so /tandem:learn and /tandem:teach can seed
+# ~/.claude/commands/demi/_assets/ so /demi:learn and /demi:teach can seed
 # it into your concept library and render study layers to HTML by default.
 #
 # Usage:
 #   ./install.sh                # default: symlink mode (recommended)
 #   ./install.sh --copy         # copy mode (for stable installations)
-#   ./install.sh --uninstall    # remove the tandem namespace directory
+#   ./install.sh --uninstall    # remove the demi namespace directory
 #
 # Run from anywhere — the script resolves its own location.
 
@@ -20,7 +20,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 CLAUDE_DIR="${HOME}/.claude"
-NAMESPACE="tandem"
+NAMESPACE="demi"
 TARGET_DIR="${CLAUDE_DIR}/commands/${NAMESPACE}"
 SRC_DIR="${REPO_ROOT}/prompts"
 RENDERER_SRC="${REPO_ROOT}/renderer"
@@ -39,7 +39,7 @@ if [[ "${MODE}" == "--uninstall" ]] || [[ "${MODE}" == "uninstall" ]]; then
   exit 0
 fi
 
-echo "🔧 Installing Tandem for Claude Code"
+echo "🔧 Installing Demigo for Claude Code  🦉"
 echo "   Source:    ${SRC_DIR}"
 echo "   Target:    ${TARGET_DIR}"
 echo "   Namespace: /${NAMESPACE}:<command>"
@@ -91,7 +91,7 @@ for cmd in "${SRC_CMDS[@]}"; do
   INSTALLED=$((INSTALLED + 1))
 done
 
-# Stage the shared curriculum renderer so /tandem:learn and /tandem:teach can
+# Stage the shared curriculum renderer so /demi:learn and /demi:teach can
 # seed <library>/study/_assets/ from a stable, clone-location-independent path.
 if [[ -d "${RENDERER_SRC}" ]]; then
   echo
@@ -113,20 +113,21 @@ fi
 echo
 echo "✅ Done. Installed ${INSTALLED}, skipped ${SKIPPED}."
 echo
-echo "Invoke commands with the tandem namespace, e.g.:"
-echo "   /${NAMESPACE}:scaffold      — scaffold Tandem structure in current project"
+echo "Invoke commands with the demi namespace, e.g.:"
+echo "   /${NAMESPACE}:scaffold      — scaffold Demigo structure in current project"
 echo "   /${NAMESPACE}:brainstorm    — start a decision-capture conversation"
 echo "   /${NAMESPACE}:discovery     — ingest client material into decisions"
 echo "   /${NAMESPACE}:learn         — learn a topic in depth (cross-project)"
 echo
 echo "First-time use:"
-echo "   1. cd into the project where you want to use Tandem"
+echo "   1. cd into the project where you want to use Demigo"
 echo "   2. Open (or restart) Claude Code in that directory"
 echo "   3. Run /${NAMESPACE}:scaffold to create .claude/docs/{decisions,views,retros,discovery,design-refs}/"
 echo "   4. Run /${NAMESPACE}:brainstorm to start capturing decisions"
 echo
 echo "Concept library: ~/Developer/concepts/ by default."
-echo "Override with: export TANDEM_CONCEPTS_DIR=/your/preferred/path"
+echo "Override with: export DEMI_CONCEPTS_DIR=/your/preferred/path"
+echo "  (the legacy TANDEM_CONCEPTS_DIR is still honored)"
 echo
 echo "Study layers render to HTML by default via the staged renderer."
 echo "That requires 'pandoc' and 'node' on PATH:  brew install pandoc node"

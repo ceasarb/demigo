@@ -1,11 +1,11 @@
 ---
-description: Scaffold the Tandem structure in a new project. Conversation-driven, decision-first — no tiers, no manifest, no phase stubs.
+description: Scaffold the Demigo structure in a new project. Conversation-driven, decision-first — no tiers, no manifest, no phase stubs.
 argument-hint: "[project-name]"
 ---
 
 # /scaffold
 
-Scaffold Tandem in a new project. Tandem is **decision-first** — there are no PRD/TDD/Roadmap stubs to fill in, because those are generated views over committed PDRs and ADRs.
+Scaffold Demigo in a new project. Demigo is **decision-first** — there are no PRD/TDD/Roadmap stubs to fill in, because those are generated views over committed PDRs and ADRs.
 
 (Named `/scaffold` rather than `/init` because Claude Code already ships a built-in `/init` command that generates a CLAUDE.md from the codebase.)
 
@@ -45,7 +45,7 @@ Ask (one at a time):
 1. **Project name?** Suggest from the current directory name.
 2. **One-line description?** What is this project, in 12 words or fewer.
 
-That's it. No tier question — Tandem doesn't have tiers. The framework scales itself to whatever decisions you actually capture.
+That's it. No tier question — Demigo doesn't have tiers. The framework scales itself to whatever decisions you actually capture.
 
 ### 2. Check for existing state
 
@@ -53,8 +53,8 @@ If `.claude/docs/` already exists and isn't empty:
 
 > ".claude/docs/ already has content. Options:
 > - **Skip** — don't touch existing state
-> - **Append** — add Tandem directories alongside, don't modify existing
-> - **Migrate** — try to map existing artifacts (PRD/Roadmap/etc.) from a heavier framework into Tandem PDRs/ADRs (interactive)
+> - **Append** — add Demigo directories alongside, don't modify existing
+> - **Migrate** — try to map existing artifacts (PRD/Roadmap/etc.) from a heavier framework into Demigo PDRs/ADRs (interactive)
 >
 > Which?"
 
@@ -78,9 +78,9 @@ If no `CLAUDE.md` at the project root, create one:
 
 ## Framework
 
-This project uses Tandem — decision-first, conversation-driven.
+This project uses Demigo — decision-first, conversation-driven.
 
-**Commands** (invoked as `/tandem:<name>`):
+**Commands** (invoked as `/demi:<name>`):
 - `brainstorm` — open conversation; commits PDRs and ADRs as decisions surface
 - `discovery` — ingest client material; preserve raw, extract candidate decisions
 - `design` — design-mode conversation; commits design PDRs/ADRs + manages visual references
@@ -101,9 +101,9 @@ This project uses Tandem — decision-first, conversation-driven.
 **No gates.** Commit what you decide; iterate when you learn more. Views are regenerated, never hand-edited.
 ```
 
-If a `CLAUDE.md` already exists, do NOT overwrite. Show the proposed Tandem block and ask:
+If a `CLAUDE.md` already exists, do NOT overwrite. Show the proposed Demigo block and ask:
 
-> "CLAUDE.md already exists. Want me to append the Tandem section, or skip?"
+> "CLAUDE.md already exists. Want me to append the Demigo section, or skip?"
 
 ### 5. Suggest next step
 
@@ -111,7 +111,7 @@ If a `CLAUDE.md` already exists, do NOT overwrite. Show the proposed Tandem bloc
 
 ## What this command does NOT do
 
-- It does NOT create a MANIFEST.yaml. Tandem has no dependency graph — views are computed on demand by `/rollup` and `/plan`.
+- It does NOT create a MANIFEST.yaml. Demigo has no dependency graph — views are computed on demand by `/rollup` and `/plan`.
 - It does NOT create phase directories or per-phase stubs. Phases exist in `phase:` fields on decisions, not as directories.
 - It does NOT ask for a tier.
 - It does NOT create any PRD, TDD, SAD, Roadmap, or Delivery Plan stubs.

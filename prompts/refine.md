@@ -66,7 +66,7 @@ On `y`:
 ## What this command does NOT do
 
 - It does NOT freely rewrite shipped decisions in place. The supersede / in-place distinction matters because shipped code is the contract; you can change docs freely as long as the docs match the code.
-- It does NOT require approval. Like everything in Tandem, refinement is conversation → commit → done.
+- It does NOT require approval. Like everything in Demigo, refinement is conversation → commit → done.
 - It does NOT cascade updates to generated views (PRD rollups, Roadmap views). Those are regenerated on demand by `/rollup` and `/plan`.
 
 ## Tone

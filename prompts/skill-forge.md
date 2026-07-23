@@ -1,5 +1,5 @@
 ---
-description: Conversational skill-authoring command. Interrogate ONE agent to a six-facet bar, then write a self-contained skill bundle (SKILL.md + a scoped decision trail) that whoever you hand it to owns and runs. Tandem's skill forge.
+description: Conversational skill-authoring command. Interrogate ONE agent to a six-facet bar, then write a self-contained skill bundle (SKILL.md + a scoped decision trail) that whoever you hand it to owns and runs. Demigo's skill forge.
 argument-hint: "<what the agent should do, in a phrase>"
 ---
 
@@ -7,7 +7,7 @@ argument-hint: "<what the agent should do, in a phrase>"
 
 Author a bespoke, agent-invocable **skill** through conversation. You (Opus) drive — the user reacts. The output is a runnable `SKILL.md` **bundle**, owned by whoever the user hands it to.
 
-This is Tandem's **forge**. Unlike `/brainstorm` (divergent, top-of-funnel, emits human-read decision records that feed a pipeline), the forge is **convergent and terminal**: you interrogate *one* agent until you can compile it, then you write the bundle and it leaves Tandem. Tandem itself stays human-in-the-loop; the forged skill is the deliverable.
+This is Demigo's **forge**. Unlike `/brainstorm` (divergent, top-of-funnel, emits human-read decision records that feed a pipeline), the forge is **convergent and terminal**: you interrogate *one* agent until you can compile it, then you write the bundle and it leaves Demigo. Demigo itself stays human-in-the-loop; the forged skill is the deliverable.
 
 The flow is **frame → drive the six facets → compile the bundle → hand off**. Stop when all six facets are pinned and the bundle is on disk.
 
@@ -22,7 +22,7 @@ The flow is **frame → drive the six facets → compile the bundle → hand off
 ## What this is — and is NOT
 
 - **Is:** a conversation that produces one runnable agent to spec, with the reasoning captured alongside it.
-- **Is NOT** a projection of an existing Tandem command into a skill (that's the mechanical `adapters/skill/build-skill.mjs`). The forge authors an *arbitrary, bespoke* agent from scratch.
+- **Is NOT** a projection of an existing Demigo command into a skill (that's the mechanical `adapters/skill/build-skill.mjs`). The forge authors an *arbitrary, bespoke* agent from scratch.
 - **Is NOT** a quick one-liner generator. You hold the **full six-facet bar** for every skill — there is no express/lightweight mode. A user who wants a throwaway prompt can hand-write one; they come to the forge *for* the rigor.
 - **The model is the compiler.** There is no build script. As the facets get pinned, you `Write` the bundle files directly — exactly as `/brainstorm` `Write`s decision records.
 
@@ -51,7 +51,7 @@ Then pin the **skill name** (kebab-case, e.g. `contributor-onboarder`) — it's 
 
 - **Fresh** (no such dir): proceed normally; the decision trail starts at `adr-001`.
 - **Exists**: do NOT silently overwrite. Ask which the user wants:
-  - **Refine** — keep the bundle and re-open specific facets. Facet edits update `SKILL.md` in place; a *reversed* design decision **supersedes** its ADR (mark the old one `superseded`, append a new higher-numbered one) rather than being edited away — the trail is append-only, like Tandem's own decisions.
+  - **Refine** — keep the bundle and re-open specific facets. Facet edits update `SKILL.md` in place; a *reversed* design decision **supersedes** its ADR (mark the old one `superseded`, append a new higher-numbered one) rather than being edited away — the trail is append-only, like Demigo's own decisions.
   - **Fresh** — replace the bundle entirely, after confirming the user accepts losing the existing trail.
 - A collision with an *unrelated* sibling skill in a `skills/` registry is a naming clash, not a re-run — offer a different name.
 
@@ -78,9 +78,9 @@ An agent with no guardrails and no fail-safe is not a forged skill; it's an unbo
 
 ### 3. Record the design trail as bundle-local ADRs
 
-As non-obvious facet decisions land (a restricted tool set, a hard guardrail, a stop-vs-guess choice), capture each as an ADR **inside the skill's own bundle** — `<skill-name>/decisions/adr-00N-*.md`. This is the same decision→artifact machinery Tandem already uses, pointed at the skill's folder so the *why* travels with the skill.
+As non-obvious facet decisions land (a restricted tool set, a hard guardrail, a stop-vs-guess choice), capture each as an ADR **inside the skill's own bundle** — `<skill-name>/decisions/adr-00N-*.md`. This is the same decision→artifact machinery Demigo already uses, pointed at the skill's folder so the *why* travels with the skill.
 
-**Numbering is local to THIS bundle.** Compute the next N by scanning **only** `<skill-name>/decisions/` for the highest existing `adr-NNN` and adding one; a fresh bundle starts at `001`. Never derive N from the host Tandem project's `.claude/docs/decisions/`, and never from a *sibling* skill's `decisions/` in the same `skills/` registry — each skill's trail is numbered independently, so two skills sitting side by side both legitimately own an `adr-001`.
+**Numbering is local to THIS bundle.** Compute the next N by scanning **only** `<skill-name>/decisions/` for the highest existing `adr-NNN` and adding one; a fresh bundle starts at `001`. Never derive N from the host Demigo project's `.claude/docs/decisions/`, and never from a *sibling* skill's `decisions/` in the same `skills/` registry — each skill's trail is numbered independently, so two skills sitting side by side both legitimately own an `adr-001`.
 
 Not every facet needs an ADR — write one when there was a real alternative the user said no to (see `/decide-tech` self-filter).
 
@@ -125,7 +125,7 @@ The forge emits a **self-contained, portable directory** — drop it anywhere (e
 └── README.md           # human-facing overview
 ```
 
-Write the bundle to a location the user chooses (default: `./<skill-name>/` in the current project, or a `skills/` dir if one exists). **Never** write the skill's ADRs into the host Tandem project's `.claude/docs/decisions/` — they belong to the skill, not the project.
+Write the bundle to a location the user chooses (default: `./<skill-name>/` in the current project, or a `skills/` dir if one exists). **Never** write the skill's ADRs into the host Demigo project's `.claude/docs/decisions/` — they belong to the skill, not the project.
 
 ## Facet → SKILL.md mapping
 

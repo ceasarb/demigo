@@ -113,7 +113,7 @@ On `merge-progress`: try to match existing checked tasks to new tasks by title f
 
 - It does NOT modify decisions.
 - It does NOT execute tasks.
-- It does NOT block on persona reviews. (Tandem has no review gates.)
+- It does NOT block on persona reviews. (Demigo has no review gates.)
 - It does NOT enforce a "delivery plan must exist before coding" rule. Code first if you want — this exists to make the plan visible, not gate work behind it.
 
 ## Tone

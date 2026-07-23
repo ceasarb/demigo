@@ -1,17 +1,17 @@
 ---
-description: Render a project's .claude/docs/ — decisions, generated views, and the onboarding guide — into a navigable, styled static HTML site. Local, static, read-only; Mermaid diagrams render offline. Use to read Tandem's project-track output as a mini-site instead of raw Markdown.
+description: Render a project's .claude/docs/ — decisions, generated views, and the onboarding guide — into a navigable, styled static HTML site. Local, static, read-only; Mermaid diagrams render offline. Use to read Demigo's project-track output as a mini-site instead of raw Markdown.
 argument-hint: "[path-to-project-or-.claude/docs]"
 ---
 
-# /tandem:render
+# /demi:render
 
 Turn a project's **project-track docs** into a browsable static site. Where
-`/tandem:teach` renders the *learning* track (the `study/` tree), this renders
+`/demi:teach` renders the *learning* track (the `study/` tree), this renders
 the *project* track: everything under `.claude/docs/` — `decisions/` (PDRs +
 ADRs), `views/` (rollups, delivery plans), and `onboarding/guide.md`.
 
-It exists because the output of `/tandem:brainstorm`, `/tandem:onboard`, and
-`/tandem:rollup` is good but painful to read as loose Markdown — no index, no
+It exists because the output of `/demi:brainstorm`, `/demi:onboard`, and
+`/demi:rollup` is good but painful to read as loose Markdown — no index, no
 cross-links, Mermaid diagrams and tables don't display. This command produces
 one navigable, styled site with a landing index and a page per document.
 
@@ -22,9 +22,9 @@ search backend. Re-run the command to refresh.
 ## Usage
 
 ```
-/tandem:render                       # render the current repo's .claude/docs
-/tandem:render ../other-repo         # render another project by its root
-/tandem:render ../other-repo/.claude/docs   # or point straight at the docs dir
+/demi:render                       # render the current repo's .claude/docs
+/demi:render ../other-repo         # render another project by its root
+/demi:render ../other-repo/.claude/docs   # or point straight at the docs dir
 ```
 
 The argument is optional and forgiving: pass a **project root** (the renderer
@@ -45,10 +45,10 @@ The Claude Code installer stages the renderer at a stable, clone-independent
 path:
 
 ```
-~/.claude/commands/tandem/_assets/build-docs.mjs
+~/.claude/commands/demi/_assets/build-docs.mjs
 ```
 
-Use that if it exists. If it doesn't (Tandem installed some other way), fall
+Use that if it exists. If it doesn't (Demigo installed some other way), fall
 back to the framework repo's `renderer/build-docs.mjs`. The renderer keeps its
 own assets (`lib.mjs`, `template.html`, `style.css`, `mermaid.min.js`)
 alongside it — nothing to seed per-project.
@@ -61,14 +61,14 @@ alongside it — nothing to seed per-project.
 
 If the resolved target has no `decisions/`, `views/`, or `onboarding/` docs,
 say so plainly and stop — there's nothing to render yet (suggest
-`/tandem:brainstorm` or `/tandem:onboard` first).
+`/demi:brainstorm` or `/demi:onboard` first).
 
 ### 3. Render
 
 Run the renderer against the target:
 
 ```bash
-node ~/.claude/commands/tandem/_assets/build-docs.mjs "<target>"
+node ~/.claude/commands/demi/_assets/build-docs.mjs "<target>"
 ```
 
 It writes a self-contained site to `<target>/.claude/docs/_site/`:
@@ -99,8 +99,8 @@ output (gitignore it in projects that track `.claude/docs`).
 - It does NOT host or publish the site — local files only.
 - It does NOT watch or auto-refresh — re-run to update after docs change.
 - It does NOT edit docs — the site is read-only; edit the Markdown via the
-  Tandem commands that own it.
-- It does NOT render the `study/` learning track — that's `/tandem:teach`'s
+  Demigo commands that own it.
+- It does NOT render the `study/` learning track — that's `/demi:teach`'s
   renderer (`build.mjs`), a sibling that shares the same core plumbing.
 
 ## Tone

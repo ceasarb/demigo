@@ -3,7 +3,7 @@ description: Design-mode conversation. Drives visual/aesthetic Q&A using referen
 argument-hint: "[topic or reference URL]"
 ---
 
-# /tandem:design
+# /demi:design
 
 Design-phase entrypoint. The conversation is visual and emotional, not logical/structural — you'll talk about reference apps, aesthetic intent, brand tone, and what "premium" feels like for this product.
 
@@ -12,9 +12,9 @@ The outputs are the same as `/brainstorm`: **PDRs and ADRs committed to `.claude
 ## Usage
 
 ```
-/tandem:design                                        # open-ended; ask what stage they're at
-/tandem:design "make the dashboard feel premium"     # seeded with a goal
-/tandem:design https://linear.app                    # seeded with a reference to discuss
+/demi:design                                        # open-ended; ask what stage they're at
+/demi:design "make the dashboard feel premium"     # seeded with a goal
+/demi:design https://linear.app                    # seeded with a reference to discuss
 ```
 
 ## Flow
@@ -66,7 +66,7 @@ Add `design` to the `tags:` field on the frontmatter so design decisions are fil
 
 When you've got 3-5 design decisions captured and the user is out of references:
 
-> "We've committed [list of design PDRs/ADRs] and saved [N] references. Next reasonable step is `/tandem:plan phase-2` to break the visual refinement into CRAWL/WALK/RUN tasks. You'll probably want to revisit this command once or twice during execution as edge cases surface."
+> "We've committed [list of design PDRs/ADRs] and saved [N] references. Next reasonable step is `/demi:plan phase-2` to break the visual refinement into CRAWL/WALK/RUN tasks. You'll probably want to revisit this command once or twice during execution as edge cases surface."
 
 ## Capturing references
 
@@ -132,13 +132,13 @@ When skipping: *"Feels more like a style guideline than a load-bearing decision.
 ## Iteration
 
 - **References are append-only.** Add new ones freely. If a reference no longer represents what you want, delete it — references aren't decisions, no history needed.
-- **Design decisions use the same lifecycle as any other decision** — in-place edit until shipped, supersede after. Use `/tandem:refine` for changes.
+- **Design decisions use the same lifecycle as any other decision** — in-place edit until shipped, supersede after. Use `/demi:refine` for changes.
 
 ## What this command does NOT do
 
 - It does NOT generate visual artifacts (mockups, palettes, code). It captures decisions and references; execution happens elsewhere.
 - It does NOT critique your design. If you want critique, run a persona review (`/review-senior-codequality` on the implemented UI, or describe what you've built and ask Opus directly).
-- It does NOT gate. References and decisions commit when you confirm — same as everything else in Tandem.
+- It does NOT gate. References and decisions commit when you confirm — same as everything else in Demigo.
 
 ## Tone
 

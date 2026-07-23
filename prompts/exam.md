@@ -3,20 +3,20 @@ description: Additive exam/cert-prep orchestrator over the learning track. Inges
 argument-hint: "<exam-slug or exam name>"
 ---
 
-# /tandem:exam
+# /demi:exam
 
 Deadline-aware **exam/cert-prep orchestrator**. It's an *additive* layer on top of the learning track — it never replaces it:
 
 ```
-/tandem:exam                         steering: blueprint · baseline · readiness · retest
+/demi:exam                         steering: blueprint · baseline · readiness · retest
    │  routes gaps into ↓  (by recommendation, never auto-invoke)
-/tandem:learn  →  /tandem:teach  →  /tandem:study
+/demi:learn  →  /demi:teach  →  /demi:study
    plan             acquire           consolidate
    ▲  measures where you stand via ↓
-/tandem:retest                       the one testing verb (baseline = retest on empty state)
+/demi:retest                       the one testing verb (baseline = retest on empty state)
 ```
 
-`/tandem:exam` owns the four things the learning track doesn't: the exam
+`/demi:exam` owns the four things the learning track doesn't: the exam
 **blueprint** (the map), a deadline-aware **readiness map** (what's worth your
 remaining hours; starts *unknown* and fills in as you test), **on-demand
 diagnostics** (learner-initiated — you decide when and what to be tested on), and
@@ -28,20 +28,20 @@ loop is:
 ingest → map → study right away → test on demand → readiness fills in → repeat
 ```
 
-**Additivity is the whole point (PDR-008).** `/tandem:learn`, `/tandem:teach`,
-and `/tandem:study` remain fully usable standalone with zero exam context. Someone
-learning for its own sake never touches `/tandem:exam`; someone prepping for a
+**Additivity is the whole point (PDR-008).** `/demi:learn`, `/demi:teach`,
+and `/demi:study` remain fully usable standalone with zero exam context. Someone
+learning for its own sake never touches `/demi:exam`; someone prepping for a
 test opts into the structure. This command *reuses* the learning verbs — it never
 wraps, forks, or replaces them.
 
 **Self-contained in the concept library.** Like the rest of the learning track,
-`/tandem:exam` reads and writes the concept library and *only* the library. There
+`/demi:exam` reads and writes the concept library and *only* the library. There
 is **no external project repo** for exam prep. An exam is a thin **overlay**
 (ADR-008) that references existing concept topics *by slug* — so studying you've
 already done counts toward readiness automatically:
 
 ```
-<library>/                            # default ~/Developer/concepts/ (TANDEM_CONCEPTS_DIR)
+<library>/                            # default ~/Developer/concepts/ (DEMI_CONCEPTS_DIR)
   study/<exam-slug>/                  # the exam overlay
     exam.yaml                         # blueprint + domain→concept-slug map
     readiness.yaml                    # per-domain confidence-weighted 2×2 + timestamps
@@ -51,24 +51,24 @@ already done counts toward readiness automatically:
 ```
 
 The teaching payload always lives in the shared `study/<topic>/` trees that
-`/tandem:teach` and `/tandem:study` write. The overlay copies **no** curriculum —
+`/demi:teach` and `/demi:study` write. The overlay copies **no** curriculum —
 it only points at topics and tracks readiness.
 
 ## Usage
 
 ```
-/tandem:exam                                 # ask which exam, then ingest a guide
-/tandem:exam gcp-pca
-/tandem:exam "Google Professional Cloud Architect"
+/demi:exam                                 # ask which exam, then ingest a guide
+/demi:exam gcp-pca
+/demi:exam "Google Professional Cloud Architect"
 ```
 
 If the concept library doesn't exist yet, offer to bootstrap it the same way
-`/tandem:learn` does (it's the shared home for the whole learning track).
+`/demi:learn` does (it's the shared home for the whole learning track).
 
 ## Flow
 
 > **Maturity:** the ingest → map → study loop is complete and usable end-to-end,
-> and testing is learner-initiated via `/tandem:retest`. A few enhancements are
+> and testing is learner-initiated via `/demi:retest`. A few enhancements are
 > still planned: a richer readiness dashboard, the full deadline-aware margin
 > curve, and sharper style-grounding of generated questions.
 
@@ -81,7 +81,7 @@ If the concept library doesn't exist yet, offer to bootstrap it the same way
 > map it onto what you've already studied, and hand you a **study plan** so you can
 > **start learning right away**. I won't quiz you up front — testing is your call.
 > Whenever *you* decide you're ready to be measured on a subject, run
-> `/tandem:retest <exam> <subject>` and I'll fill in your readiness map.
+> `/demi:retest <exam> <subject>` and I'll fill in your readiness map.
 >
 > Two ground rules: any questions are generated from **your** materials, not a
 > canned bank; and I'll show you the evidence but I'll **never** tell you to book
@@ -143,7 +143,7 @@ surface it.
 
 6. **Wire the style reference.** If sample questions were supplied, point
    `exam.question_style` at their `materials/` path. They are a *style* reference
-   for `/tandem:retest` only, never reproduced verbatim (PDR-009).
+   for `/demi:retest` only, never reproduced verbatim (PDR-009).
 
 7. **Write `exam.yaml`, then confirm before proceeding.** Write the file, then
    show the learner the extracted domain list with weights and flags:
@@ -158,7 +158,7 @@ surface it.
 #### `exam.yaml` schema (ADR-008)
 
 `exam.yaml` is the blueprint: the exam's metadata, its weighted domains and
-sub-objectives, and the domain→concept-slug map. `/tandem:exam` owns this file.
+sub-objectives, and the domain→concept-slug map. `/demi:exam` owns this file.
 
 ```yaml
 # <library>/study/<exam-slug>/exam.yaml
@@ -212,7 +212,7 @@ domains:
       - "Advising development/operation teams to ensure successful deployment"
       - "Interacting with Google Cloud programmatically"
     concepts: []                      # nothing in the library covers this yet …
-    unmapped: true                    # … so it's flagged for a fresh /tandem:learn scaffold
+    unmapped: true                    # … so it's flagged for a fresh /demi:learn scaffold
 ```
 
 Field notes:
@@ -225,8 +225,8 @@ Field notes:
   cut score (common — e.g. GCP doesn't publish one) is treated conservatively.
 - **`concepts`** references existing `study/<topic>` slugs by path — it never
   copies curriculum. An empty `concepts` + `unmapped: true` is the signal that a
-  domain needs a `/tandem:learn` scaffold.
-- **`objectives`** are kept verbatim so generated diagnostics (`/tandem:retest`)
+  domain needs a `/demi:learn` scaffold.
+- **`objectives`** are kept verbatim so generated diagnostics (`/demi:retest`)
   can target sub-objectives, not just domains.
 
 ### 3. Map domains → concept slugs
@@ -235,12 +235,12 @@ For each blueprint domain, find the matching existing concept topic(s) under
 `<library>/study/` and record the mapping in each domain's `concepts:` list. This
 is the step that makes prior study *count* (ADR-008): a domain backed by a topic
 you've already worked shows up in the readiness map as a real signal rather than
-an unknown. Flag any domain with no match — those become fresh `/tandem:learn`
+an unknown. Flag any domain with no match — those become fresh `/demi:learn`
 scaffolds (step 5).
 
 **Mapping is not readiness.** This step only records *which topics back a domain*
 (the routing target). Whether you actually *know* that domain is still measured by
-the baseline (`/tandem:retest`), never assumed from the mapping.
+the baseline (`/demi:retest`), never assumed from the mapping.
 
 Procedure:
 
@@ -265,7 +265,7 @@ Procedure:
    > - **D1 Designing…** → `study/application-platform`, `study/networking/gcp`
    > - **D2 Managing/provisioning…** → `study/networking/gcp`
    > - **D6 Managing implementation** → _no topic yet_ — I'll suggest
-   >   `/tandem:learn` for this when we route gaps.
+   >   `/demi:learn` for this when we route gaps.
    >
    > Look right? Add or drop any mappings before we build your study plan."
 
@@ -280,23 +280,23 @@ is mapped, present a **study plan** and hand straight into learning:
 
 - Order the domains by **blueprint weight** (highest-leverage first), noting which
   are backed by existing study (start there — momentum) vs. thin/unmapped.
-- Recommend the concrete first move — `/tandem:teach <slug>` for a mapped domain,
-  or `/tandem:learn <domain>` to scaffold an unmapped one — and let the learner
+- Recommend the concrete first move — `/demi:teach <slug>` for a mapped domain,
+  or `/demi:learn <domain>` to scaffold an unmapped one — and let the learner
   pick where to begin.
 - Initialize `readiness.yaml` with every domain `status: unknown` (nothing tested
   yet). The map fills in on demand.
 
 **Testing is pull, not push.** Whenever the learner decides they're ready to be
-measured on a subject, *they* run `/tandem:retest <exam-slug> [domain]`. The
+measured on a subject, *they* run `/demi:retest <exam-slug> [domain]`. The
 baseline is simply the first such retest — there is no automatic up-front test.
 
-`/tandem:retest` (see `prompts/retest.md`) owns the diagnostic generation,
+`/demi:retest` (see `prompts/retest.md`) owns the diagnostic generation,
 confidence capture, and the writes into the `readiness.yaml` schema below.
 
 #### `readiness.yaml` schema (PDR-010)
 
 `readiness.yaml` is the per-domain confidence-weighted 2×2 plus the timestamps the
-deadline-aware bar needs. `/tandem:retest` writes it; `/tandem:exam` reads it to
+deadline-aware bar needs. `/demi:retest` writes it; `/demi:exam` reads it to
 render the dashboard.
 
 ```yaml
@@ -345,7 +345,7 @@ computed at dashboard time (flow step 5) from all domains × weights × `exam_da
 - `close` — meets the score but has blind spots, or sits just under the score.
 - `at-risk` — otherwise.
 
-**`attempts[]`** is the history that lets a later `/tandem:retest` update one
+**`attempts[]`** is the history that lets a later `/demi:retest` update one
 domain without wiping others, and `last_tested` feeds the bar's "retested since
 last teach" component (PDR-011).
 
@@ -360,7 +360,7 @@ Read `readiness.yaml` and show:
   severity (blind spots first).
 
 Route by **recommendation, not invocation** (ADR-009): name the concrete command
-to run — `/tandem:teach <slug>` for a mapped weak domain, or `/tandem:learn
+to run — `/demi:teach <slug>` for a mapped weak domain, or `/demi:learn
 <domain>` to scaffold a topic for an unmapped one. The learner picks the moment.
 
 _(Planned: richer dashboard rendering and the full deadline-aware margin curve.
@@ -368,21 +368,21 @@ Today, present the map and next action as clear text.)_
 
 ### 6. Re-runs
 
-On a later `/tandem:exam <exam-slug>`, recognize it: read `exam.yaml` and
+On a later `/demi:exam <exam-slug>`, recognize it: read `exam.yaml` and
 `readiness.yaml` and open straight into the readiness dashboard + next action
 rather than re-ingesting. Re-ingest only if the guide changed.
 
 ## State, not decisions
 
-Unlike `/tandem:learn`, this command does **not** commit PDRs/ADRs per exam. Its
+Unlike `/demi:learn`, this command does **not** commit PDRs/ADRs per exam. Its
 durable output is **state** — `exam.yaml` and `readiness.yaml` — owned and
-rewritten by `/tandem:exam` and `/tandem:retest`. (The decisions that *designed*
-this capability live in the Tandem repo: PDR-008…011, ADR-008/009.)
+rewritten by `/demi:exam` and `/demi:retest`. (The decisions that *designed*
+this capability live in the Demigo repo: PDR-008…011, ADR-008/009.)
 
 ## What this command does NOT do
 
-- It does NOT teach, consolidate, or author curriculum — that's `/tandem:teach`,
-  `/tandem:study`, and `/tandem:learn`. This command steers; those do the work.
+- It does NOT teach, consolidate, or author curriculum — that's `/demi:teach`,
+  `/demi:study`, and `/demi:learn`. This command steers; those do the work.
 - It does NOT ship or serve a question bank — diagnostics are generated from your
   supplied materials (PDR-009). Sample questions are style references, never
   reproduced verbatim.
@@ -390,7 +390,7 @@ this capability live in the Tandem repo: PDR-008…011, ADR-008/009.)
   risk; the decision to sit the exam is the learner's (PDR-011).
 - It does NOT replace the learning track — it's additive; learn/teach/study stay
   fully standalone (PDR-008).
-- It does NOT auto-invoke `/tandem:teach`, `/tandem:study`, or `/tandem:retest` —
+- It does NOT auto-invoke `/demi:teach`, `/demi:study`, or `/demi:retest` —
   it recommends the exact command; you run it (ADR-009).
 - It is NOT GCP- or certification-specific — it eats any blueprint: cloud cert,
   professional exam, school exam.
