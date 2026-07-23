@@ -15,7 +15,7 @@ There are no approval gates. There are no status workflows. Conversation → con
 ## Repo layout
 
 ```
-tandem/
+demigo/
 ├── prompts/                    # source-of-truth markdown (the actual framework)
 ├── adapters/
 │   ├── claude-code/            # install as Claude Code slash commands (/demi:*)
@@ -42,8 +42,8 @@ The `prompts/` directory is *the framework*. The adapters are distribution mecha
 ## Install (Claude Code)
 
 ```bash
-git clone https://github.com/ceasarb/tandem.git ~/Developer/tandem
-cd ~/Developer/tandem
+git clone https://github.com/ceasarb/demigo.git ~/Developer/demigo
+cd ~/Developer/demigo
 ./install.sh
 ```
 
