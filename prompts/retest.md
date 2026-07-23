@@ -40,11 +40,10 @@ If the exam overlay doesn't exist yet, tell the user to run `/tandem:exam
 
 ## Flow
 
-> **Scaffold status:** CRAWL. The generate→capture→score→write loop below is
-> specified end-to-end and runnable. Two refinements are deferred to WALK and
-> marked _(WALK)_: deep **style-grounding** from sample questions (PDR-009) and the
-> polished per-answer **confidence-capture UX** (PDR-010). CRAWL generates
-> reasonable grounded questions and asks confidence plainly.
+> **Maturity:** the generate → capture → score → write loop is complete and
+> runnable. Two enhancements are still planned: deeper **style-grounding** from
+> your sample questions, and a more polished per-answer **confidence-capture UX**.
+> Today it generates solid grounded questions and asks confidence plainly.
 
 ### 1. Resolve scope and load the blueprint
 
@@ -63,8 +62,8 @@ Author **new** questions against the in-scope domains' `objectives` from
 - If `exam.question_style` is set, read the sample questions under `materials/`
   and **mimic their style** — scenario length, phrasing, single- vs multi-select,
   distractor patterns, difficulty. Author fresh questions in that style; **never
-  reproduce a sample verbatim** (PDR-009). _(WALK: sharpen the style-extraction —
-  CRAWL mimics at a reasonable-effort level.)_
+  reproduce a sample verbatim** (PDR-009). _(Planned: sharpen the style-extraction;
+  today it mimics at a reasonable-effort level.)_
 - If no samples exist, fall back to blueprint-only generation from the objectives.
 - Optionally draw scenario grounding from other `materials/` (partner docs, case
   studies) so questions read like the target exam.
@@ -81,12 +80,12 @@ Save the generated set to `diagnostics/<date>-<scope>.md` before administering.
 Present questions one at a time. For **each** question capture two things:
 
 1. the learner's **answer**, and
-2. their **confidence** — plainly, "sure" or "unsure" (binary in CRAWL).
+2. their **confidence** — plainly, "sure" or "unsure" (binary for now).
 
 Confidence is load-bearing, not decoration: it's what separates a blind spot from
 a known gap. Do not reveal correctness until the set (or domain) is complete, so
-confidence stays honest. _(WALK: refine the capture UX and consider a 3-point
-scale + the fragile-quadrant light-retest logic.)_
+confidence stays honest. _(Planned: refine the capture UX and consider a 3-point
+scale plus fragile-quadrant light-retest logic.)_
 
 ### 4. Score into the 2×2
 

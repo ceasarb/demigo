@@ -17,12 +17,15 @@ Deadline-aware **exam/cert-prep orchestrator**. It's an *additive* layer on top 
 ```
 
 `/tandem:exam` owns the four things the learning track doesn't: the exam
-**blueprint** (the map), a **baseline** diagnostic (where you are), a
-deadline-aware **readiness map** (what's worth your remaining hours), and
-**retest** (did the gap close). The loop is:
+**blueprint** (the map), a deadline-aware **readiness map** (what's worth your
+remaining hours; starts *unknown* and fills in as you test), **on-demand
+diagnostics** (learner-initiated — you decide when and what to be tested on), and
+**retest** (did the gap close). It is **study-first**: after ingest it hands you
+straight into studying — it never gates learning behind a test (PDR-008 v0.2). The
+loop is:
 
 ```
-ingest → baseline → readiness map → route to learn/teach/study → retest → repeat
+ingest → map → study right away → test on demand → readiness fills in → repeat
 ```
 
 **Additivity is the whole point (PDR-008).** `/tandem:learn`, `/tandem:teach`,
@@ -40,8 +43,8 @@ already done counts toward readiness automatically:
 ```
 <library>/                            # default ~/Developer/concepts/ (TANDEM_CONCEPTS_DIR)
   study/<exam-slug>/                  # the exam overlay
-    exam.yaml                         # blueprint + domain→concept-slug map   (schema: build step 2)
-    readiness.yaml                    # per-domain confidence 2×2 + timestamps (schema: build step 5)
+    exam.yaml                         # blueprint + domain→concept-slug map
+    readiness.yaml                    # per-domain confidence-weighted 2×2 + timestamps
     materials/                        # ingested exam guide, sample questions, partner docs
     diagnostics/                      # generated question sets + attempt records
   study/<topic>/                      # existing concept topics, referenced by slug (unchanged)
@@ -64,12 +67,10 @@ If the concept library doesn't exist yet, offer to bootstrap it the same way
 
 ## Flow
 
-> **Scaffold status:** CRAWL complete. Specified: the `exam.yaml` schema, the
-> blueprint extraction procedure, the domain→slug mapping, and the
-> `readiness.yaml` schema (flow steps 2–4); the `/tandem:retest` prompt is
-> authored in `prompts/retest.md`. The ingest→baseline→readiness-map loop is
-> spec'd end-to-end. WALK deepens the dashboard, deadline-aware bar, style-
-> grounding, and routing.
+> **Maturity:** the ingest → map → study loop is complete and usable end-to-end,
+> and testing is learner-initiated via `/tandem:retest`. A few enhancements are
+> still planned: a richer readiness dashboard, the full deadline-aware margin
+> curve, and sharper style-grounding of generated questions.
 
 ### 1. Frame the conversation
 
@@ -77,11 +78,12 @@ If the concept library doesn't exist yet, offer to bootstrap it the same way
 > normal learn/teach/study loop — it doesn't change how those work.
 >
 > Here's what I do: pull your exam guide into a **blueprint** (domains + weights),
-> **baseline-test** you across it, then show a **readiness map** that tells us
-> where your remaining time is best spent. When there's a gap, I'll point you at
-> `/tandem:teach` / `/tandem:study` to close it — I recommend, you run.
+> map it onto what you've already studied, and hand you a **study plan** so you can
+> **start learning right away**. I won't quiz you up front — testing is your call.
+> Whenever *you* decide you're ready to be measured on a subject, run
+> `/tandem:retest <exam> <subject>` and I'll fill in your readiness map.
 >
-> Two ground rules: the questions are generated from **your** materials, not a
+> Two ground rules: any questions are generated from **your** materials, not a
 > canned bank; and I'll show you the evidence but I'll **never** tell you to book
 > or sit the exam — that call's yours. Stop me anytime."
 
@@ -176,7 +178,7 @@ exam:
 
 # Weighted domains. `weight` values are fractions and should sum to ≈ 1.0.
 # If the guide gives no weights, extraction assigns equal weights and flags it
-# (weights_estimated: true) — see build step 3.
+# (weights_estimated: true).
 weights_estimated: false
 domains:
   - id: D1
@@ -265,20 +267,31 @@ Procedure:
    > - **D6 Managing implementation** → _no topic yet_ — I'll suggest
    >   `/tandem:learn` for this when we route gaps.
    >
-   > Look right? Add or drop any mappings before we baseline."
+   > Look right? Add or drop any mappings before we build your study plan."
 
 Partial coverage is fine — if a topic covers only some of a domain's objectives,
-still map it; the baseline diagnostic will expose the thin spots as gaps.
+still map it; a diagnostic will expose the thin spots as gaps if and when the
+learner chooses to test that subject.
 
-### 4. Baseline via `/tandem:retest`
+### 4. Present the study plan and start studying (no baseline)
 
-The baseline is just a retest with no prior state. Hand off to `/tandem:retest`
-(scoped to the whole exam) to generate a grounded diagnostic, capture each answer
-**plus a confidence rating**, and write the confidence-weighted 2×2 into
-`readiness.yaml` (PDR-010).
+**Study-first (PDR-008 v0.2): do not quiz the learner here.** Once the blueprint
+is mapped, present a **study plan** and hand straight into learning:
+
+- Order the domains by **blueprint weight** (highest-leverage first), noting which
+  are backed by existing study (start there — momentum) vs. thin/unmapped.
+- Recommend the concrete first move — `/tandem:teach <slug>` for a mapped domain,
+  or `/tandem:learn <domain>` to scaffold an unmapped one — and let the learner
+  pick where to begin.
+- Initialize `readiness.yaml` with every domain `status: unknown` (nothing tested
+  yet). The map fills in on demand.
+
+**Testing is pull, not push.** Whenever the learner decides they're ready to be
+measured on a subject, *they* run `/tandem:retest <exam-slug> [domain]`. The
+baseline is simply the first such retest — there is no automatic up-front test.
 
 `/tandem:retest` (see `prompts/retest.md`) owns the diagnostic generation,
-confidence capture, and the writes into the schema below.
+confidence capture, and the writes into the `readiness.yaml` schema below.
 
 #### `readiness.yaml` schema (PDR-010)
 
@@ -333,8 +346,8 @@ computed at dashboard time (flow step 5) from all domains × weights × `exam_da
 - `at-risk` — otherwise.
 
 **`attempts[]`** is the history that lets a later `/tandem:retest` update one
-domain without wiping others (WALK), and `last_tested` feeds the bar's
-"retested since last teach" component (PDR-011).
+domain without wiping others, and `last_tested` feeds the bar's "retested since
+last teach" component (PDR-011).
 
 ### 5. Readiness dashboard & routing
 
@@ -350,8 +363,8 @@ Route by **recommendation, not invocation** (ADR-009): name the concrete command
 to run — `/tandem:teach <slug>` for a mapped weak domain, or `/tandem:learn
 <domain>` to scaffold a topic for an unmapped one. The learner picks the moment.
 
-_(TODO: build steps in WALK flesh out the dashboard rendering, the margin curve,
-and routing copy.)_
+_(Planned: richer dashboard rendering and the full deadline-aware margin curve.
+Today, present the map and next action as clear text.)_
 
 ### 6. Re-runs
 
