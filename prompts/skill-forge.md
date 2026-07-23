@@ -147,8 +147,8 @@ Write the bundle to a location the user chooses (default: `./<skill-name>/` in t
 name: <skill-name>
 description: <trigger facet — one line an orchestrator reads to decide invocation>
 metadata:
-  tandem.namespace: <namespace>
-  tandem.version: 0.1.0
+  demi.namespace: <namespace>
+  demi.version: 0.1.0
 ---
 
 # <Skill Title>
